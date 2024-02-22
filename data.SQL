@@ -11,3 +11,9 @@ INSERT INTO Ingredients (id, name, country, allergern) VALUES
 (011, "cow milk", "france", "lactose")
 (012, "oat milk", "france", "none");
 
+INSERT TO Recipes(id, name, allergen, quantity, ingredients, time) VALUES
+(001, "tropical", "pineapple", 75, "mango pineapple passion fruit", 2),
+(002, "red fruits", "none", 75, "strawberry rawsberry blueberry", 2),
+(003, "fruit salad", "kiwi, pineapple", 75, "pineapple strawberry kiwi", 2),
+(004, "banawberries", "none", 75, "banana strawberry", 2)
+(005, "orange juice", "none", 75, "orange", 1);
