@@ -1,0 +1,165 @@
+@startuml Diagram of MangoDB
+Hide circle
+
+entity Customer
+{
+    ..Keys..
+    <b>PK | first_name: VARCHAR(255)
+    <b>PK | last_name: VARCHAR(255)
+    ..Attributes..
+    email: VARCHAR(255)
+    password: VARCHAR(255)
+    order_count: INT
+    loyalty_rank: [Bronze, Silver, Gold, Platinum]
+}
+
+entity Order ##[dashed]
+{
+    ..Keys..
+    <b>PK | order_date: DATE
+    FK1 | customer_first_name: VARCHAR(255)
+    FK1 | customer_last_name: VARCHAR(255)
+    FK2 | mango_chef_first_name: VARCHAR(255)
+    FK2 | mango_chef_last_name: VARCHAR(255)
+    ..Attributes..
+    price: FLOAT
+    status: [Pending, In Progress, Completed]
+}
+
+entity OrderMeal ##[dashed]
+{
+    ..Keys..
+    <b>PK | order_date: DATE
+    FK1 | customer_first_name: VARCHAR(255)
+    FK1 | customer_last_name: VARCHAR(255)
+    FK2 | meal_name: VARCHAR(255)
+    ..Attributes..
+    quantity: INT
+}
+
+entity Meal ##[dashed]
+{
+    ..Keys..
+    <b>PK | name: VARCHAR(255)
+    ..Attributes..
+    price: FLOAT
+    preparation_time: TIME
+}
+
+entity Recipe ##[dashed]
+{
+    ..Keys..
+    <b>PK | name: VARCHAR(255)
+    FK1 | ingredient_name: VARCHAR(255)
+    FK2 | tool_name: VARCHAR(255)
+    ..Attributes..
+    time: TIME
+}
+
+entity Step ##[dashed]
+{
+    ..Keys..
+    <b>PK , FK1 | name: VARCHAR(255)
+    <b>PK , FK2 | ingredient_name: VARCHAR(255)
+    <b>PK , FK3 | tool_name: VARCHAR(255)
+    ..Attributes..
+    description: VARCHAR(255)
+    time: TIME
+}
+
+entity RecipeIngredient
+{
+    ..Keys..
+    <b>PK , FK1 | recipe_name: VARCHAR(255)
+    <b>PK , FK2 | ingredient_name: VARCHAR(255)
+    ..Attributes..
+    quantity: INT
+}
+
+entity RecipeTool
+{
+    ..Keys..
+    <b>PK , FK1 | recipe_name: VARCHAR(255)
+    <b>PK , FK2 | tool_name: VARCHAR(255)
+    ..Attributes..
+    quantity: INT
+}
+
+entity Ingredient
+{
+    ..Keys..
+    <b>PK | name: VARCHAR(255)
+    ..Attributes..
+    price: FLOAT
+    calories : FLOAT
+    availability: BOOL
+    allergens: VARCHAR(255)
+    country: VARCHAR(255)
+    region: VARCHAR(255)
+}
+
+entity Tool
+{
+    ..Keys..
+    <b>PK | name: VARCHAR(255)
+    ..Attributes..
+    price: FLOAT
+    availability: BOOL
+}
+
+
+entity SupplierCompany
+{   
+    ..Keys..
+    <b>PK | name: VARCHAR(255)
+    ..Attributes..
+    email: VARCHAR(255)
+    password: VARCHAR(255)
+    address: VARCHAR(255)
+    price_category: [Low, Medium, High]
+}
+
+
+
+entity MangoChef
+{
+    ..Keys..
+    <b>PK | first_name: VARCHAR(255)
+    <b>PK | last_name: VARCHAR(255)
+    ..Attributes..
+    email: VARCHAR(255)
+    password: VARCHAR(255)
+    salary: FLOAT
+    working_hours: INT
+}
+
+entity MangoManager
+{
+    ..Keys..
+    <b>PK | first_name: VARCHAR(255)
+    <b>PK | last_name: VARCHAR(255)
+    ..Attributes..
+    email: VARCHAR(255)
+    password: VARCHAR(255)
+    salary: FLOAT
+    working_hours: INT
+}
+
+MangoManager }|-down-o{ SupplierCompany
+MangoManager }|-up-o{ MangoChef
+MangoChef ||-left-o{ Order
+
+SupplierCompany ||-down-|{ Ingredient
+
+Customer ||-down-o{ Order
+Order  }o-down-|{ OrderMeal
+OrderMeal }o-down-|{ Meal
+Meal }o-down-|{ Recipe
+
+Recipe }o-down-|{ RecipeIngredient
+Recipe }o-down-|{ RecipeTool
+RecipeIngredient }o-down-|{ Ingredient
+RecipeTool }o-down-|{ Tool
+
+Recipe -left-|{ Step
+@enduml
