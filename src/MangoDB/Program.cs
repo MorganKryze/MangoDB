@@ -1,11 +1,16 @@
-﻿
-namespace MyApp
+﻿using ConsoleAppVisuals;
+using ConsoleAppVisuals.AnimatedElements;
+using ConsoleAppVisuals.InteractiveElements;
+using ConsoleAppVisuals.PassiveElements;
+
+namespace MangoDB;
+
+class Program
 {
-    class Program
+    static void Main()
     {
-        static void Main(string[] args)
-        {
-            
-        }
+        Window.Open();
+        Window.Freeze();
+        Window.Close();
     }
 }
