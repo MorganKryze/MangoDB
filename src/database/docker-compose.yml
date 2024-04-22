@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/script.sql
+    ports:
+      - 5432:5432
+
+volumes:
+  data:
