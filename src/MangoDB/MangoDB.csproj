@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ConsoleAppVisuals" Version="3.5.2" />
+  </ItemGroup>
+
 </Project>
