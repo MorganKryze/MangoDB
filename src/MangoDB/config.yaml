@@ -1,0 +1,17 @@
+loyalty_ranks:
+  - name: "Classic"
+    min_points: 0
+    max_points: 9
+    discount: 0
+  - name: "Bronze"
+    min_points: 10
+    max_points: 49
+    discount: 0.05
+  - name: "Silver"
+    min_points: 50
+    max_points: 99
+    discount: 0.1
+  - name: "Gold"
+    min_points: 100
+    max_points: 
+    discount: 0.20
