@@ -8,6 +8,6 @@ interface IRepository
         string last_name,
         string password,
         int order_count,
-        Profile loyalty_rank
+        string loyalty_rank
     ) { }
 }
