@@ -1,12 +1,4 @@
-﻿using System.Text;
-using ConsoleAppVisuals;
-using ConsoleAppVisuals.AnimatedElements;
-using ConsoleAppVisuals.Enums;
-using ConsoleAppVisuals.InteractiveElements;
-using ConsoleAppVisuals.PassiveElements;
-using static SharpHash.Base.HashFactory;
-
-namespace MangoDB;
+﻿namespace MangoDB;
 
 class Program
 {
@@ -19,6 +11,8 @@ class Program
         Setup();
 
         Authentication();
+
+        Redirection();
 
         Window.Close();
     }
@@ -79,14 +73,14 @@ class Program
         {
             Window.ActivateElement(password);
             var passwordResponse = password.GetResponse();
-            string hashedPassword = Crypto
-                .CreateSHA2_256()
+            string hashedPassword = HashFactory
+                .Crypto.CreateSHA2_256()
                 .ComputeString(passwordResponse!.Value, Encoding.UTF8)
                 .ToString();
             // ! DEBUG: Validation to be replaced with db query
             // TODO: Replace with db query
-            string passwordExpected = Crypto
-                .CreateSHA2_256()
+            string passwordExpected = HashFactory
+                .Crypto.CreateSHA2_256()
                 .ComputeString("secret", Encoding.UTF8)
                 .ToString();
             if (hashedPassword != passwordExpected)
@@ -111,5 +105,29 @@ class Program
         // TODO: Replace with db query
         user = Profile.Administrator;
         // ! DEBUG: Profile to be replaced with db query
+    }
+
+    static void Redirection()
+    {
+        switch (user)
+        {
+            case Profile.Administrator:
+                Administrator.HomePage();
+                break;
+            case Profile.MangoManager:
+                // TODO: Add MangoManager method
+                break;
+            case Profile.MangoChef:
+                // TODO: Add MangoChef method
+                break;
+            case Profile.Customer:
+                // TODO: Add Customer method
+                break;
+            case Profile.Supplier:
+                // TODO: Add Supplier method
+                break;
+            case Profile.None:
+                break;
+        }
     }
 }
