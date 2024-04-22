@@ -9,8 +9,5 @@ public class RepositoryImplementation : IRepository
         string password,
         int order_count,
         Profile loyalty_rank
-    ) { 
-
-        
-    }
+    ) { }
 }

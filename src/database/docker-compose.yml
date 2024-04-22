@@ -2,15 +2,18 @@ services:
   db:
     image: postgres:alpine
     restart: always
+    hostname: ${DB_HOST}
     env_file:
       - .env
     environment:
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - ./db:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/script.sql
     ports:
-      - 5432:5432
+      - ${DB_PORT}:5432
 
 volumes:
   data:
