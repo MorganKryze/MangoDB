@@ -5,3 +5,4 @@ global using ConsoleAppVisuals.Enums;
 global using ConsoleAppVisuals.InteractiveElements;
 global using ConsoleAppVisuals.PassiveElements;
 global using SharpHash.Base;
+global using Npgsql;

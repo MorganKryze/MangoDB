@@ -73,16 +73,10 @@ class Program
         {
             Window.ActivateElement(password);
             var passwordResponse = password.GetResponse();
-            string hashedPassword = HashFactory
-                .Crypto.CreateSHA2_256()
-                .ComputeString(passwordResponse!.Value, Encoding.UTF8)
-                .ToString();
+            string hashedPassword = Tool.Hash(passwordResponse!.Value);
             // ! DEBUG: Validation to be replaced with db query
             // TODO: Replace with db query
-            string passwordExpected = HashFactory
-                .Crypto.CreateSHA2_256()
-                .ComputeString("secret", Encoding.UTF8)
-                .ToString();
+            string passwordExpected = Tool.Hash("secret");
             if (hashedPassword != passwordExpected)
             {
                 Window.ActivateElement(wrongPassword);
