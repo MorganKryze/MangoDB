@@ -148,7 +148,7 @@ OrderMeal }o-down-|{ Meal
 
 Recipe }o-left-|{ RecipeIngredient
 RecipeIngredient }o-down-|{ Ingredient
-Recipe }o-right-|{ RecipeTool
+Recipe }o-up-|{ RecipeTool
 RecipeTool }o-down-|{ Tool
 
 Recipe }|-down-|{ Step
