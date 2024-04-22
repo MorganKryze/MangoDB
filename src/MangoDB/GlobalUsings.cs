@@ -6,3 +6,4 @@ global using ConsoleAppVisuals.InteractiveElements;
 global using ConsoleAppVisuals.PassiveElements;
 global using SharpHash.Base;
 global using Npgsql;
+global using dotenv.net;

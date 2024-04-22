@@ -19,6 +19,8 @@ class Program
 
     static void Setup()
     {
+        RepositoryImplementation.InitRepository();
+
         Title title = new("Mango DB", font: Font.Ghost);
         Header header = new("", "Welcome to the MangoDB smoothie shop", "");
         Footer footer = new("[ESC] Back", "[Z|↑] Up   [S|↓] Down", "[ENTER] Select");
