@@ -1,8 +1,10 @@
-﻿using ConsoleAppVisuals;
+﻿using System.Text;
+using ConsoleAppVisuals;
 using ConsoleAppVisuals.AnimatedElements;
 using ConsoleAppVisuals.Enums;
 using ConsoleAppVisuals.InteractiveElements;
 using ConsoleAppVisuals.PassiveElements;
+using static SharpHash.Base.HashFactory;
 
 namespace MangoDB;
 
@@ -24,7 +26,7 @@ class Program
     static void Setup()
     {
         Title title = new("Mango DB", font: Font.Ghost);
-        Header header = new(centerText: "Welcome to MangoDB");
+        Header header = new("", "Welcome to the MangoDB smoothie shop", "");
         Footer footer = new("[ESC] Back", "[Z|↑] Up   [S|↓] Down", "[ENTER] Select");
         FakeLoadingBar startingLoadingBar = new("[ Starting the app ... ]");
         Window.AddElement(title, header, footer, startingLoadingBar);
@@ -77,10 +79,17 @@ class Program
         {
             Window.ActivateElement(password);
             var passwordResponse = password.GetResponse();
+            string hashedPassword = Crypto
+                .CreateSHA2_256()
+                .ComputeString(passwordResponse!.Value, Encoding.UTF8)
+                .ToString();
             // ! DEBUG: Validation to be replaced with db query
             // TODO: Replace with db query
-            string passwordExpected = "secret";
-            if (passwordResponse!.Value != passwordExpected)
+            string passwordExpected = Crypto
+                .CreateSHA2_256()
+                .ComputeString("secret", Encoding.UTF8)
+                .ToString();
+            if (hashedPassword != passwordExpected)
             {
                 Window.ActivateElement(wrongPassword);
                 var wrongPasswordResponse = wrongPassword.GetResponse();
@@ -97,5 +106,10 @@ class Program
         FakeLoadingBar profileLoadingBar = new("[ Loading profile... ]");
         Window.AddElement(profileLoadingBar);
         Window.ActivateElement(profileLoadingBar);
+
+        // ! DEBUG: Profile to be replaced with db query
+        // TODO: Replace with db query
+        user = Profile.Administrator;
+        // ! DEBUG: Profile to be replaced with db query
     }
 }
