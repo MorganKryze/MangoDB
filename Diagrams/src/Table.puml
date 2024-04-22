@@ -121,7 +121,7 @@ entity MangoChef
     <b>     | first_name: VARCHAR(255)
     <b>     | last_name: VARCHAR(255)
     <b>     | password: VARCHAR(255)
-    <b>     | working_hours: INT
+    <b>     | working_hours: TIME
     <b>     | salary: FLOAT
 }
 
@@ -132,7 +132,7 @@ entity MangoManager
     <b>     | first_name: VARCHAR(255)
     <b>     | last_name: VARCHAR(255)
     <b>     | password: VARCHAR(255)
-    <b>     | working_hours: INT
+    <b>     | working_hours: TIME
     <b>     | salary: FLOAT
 }
 
