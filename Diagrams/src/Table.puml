@@ -59,7 +59,7 @@ entity Recipe ##[dashed]
 entity Step ##[dashed]
 {
     ..Keys..
-    <b>PK , FK1 | name: VARCHAR(255)
+    <b>PK , FK1 | recipe_name: VARCHAR(255)
     <b>PK , FK2 | ingredient_name: VARCHAR(255)
     <b>PK , FK3 | tool_name: VARCHAR(255)
     ..Attributes..
@@ -67,7 +67,7 @@ entity Step ##[dashed]
     time: TIME
 }
 
-entity RecipeIngredient
+entity RecipeIngredient ##[dashed]
 {
     ..Keys..
     <b>PK , FK1 | recipe_name: VARCHAR(255)
@@ -76,7 +76,7 @@ entity RecipeIngredient
     quantity: INT
 }
 
-entity RecipeTool
+entity RecipeTool ##[dashed]
 {
     ..Keys..
     <b>PK , FK1 | recipe_name: VARCHAR(255)
