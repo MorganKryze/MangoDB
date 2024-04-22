@@ -9,7 +9,7 @@ entity Customer
     <b>     | last_name: VARCHAR(255)
     <b>     | password: VARCHAR(255)
     <b>     | order_count: INT
-    <b>     | loyalty_rank: [Bronze, Silver, Gold, Platinum]
+    <b>     | loyalty_rank: [Bronze, Silver, Gold]
 }
 
 entity Order ##[dashed]
@@ -34,8 +34,18 @@ entity Meal ##[dashed]
 {
     {static}<b>PK | name: VARCHAR(255)
     --
+    <b>FK1 | order_time: TIMESTAMP
+    <b>FK2 | recipe_name: VARCHAR(255)
     <b>     | price: FLOAT
     <b>     | preparation_time: TIME
+}
+
+entity RecipeMeal ##[dashed]
+{
+    {static}<b>PK , FK1 | recipe_name: VARCHAR(255)
+    {static}<b>PK , FK2 | meal_name: VARCHAR(255)
+    --
+    <b>     | quantity: INT
 }
 
 entity Recipe ##[dashed]
@@ -126,21 +136,22 @@ entity MangoManager
     <b>     | salary: FLOAT
 }
 
-MangoManager }|.down-o{ SupplierCompany
-MangoManager }|.up..o{ MangoChef
-MangoChef ||-down-o{ Order
+MangoManager ||.down-|{ SupplierCompany
+MangoManager ||.up..|{ MangoChef
+MangoChef ||-right-o{ Order
 
 SupplierCompany ||.down-|{ Ingredient
 
 Customer ||.down-o{ Order
 Order  }o-down-|{ OrderMeal
 OrderMeal }o-down-|{ Meal
-Meal }o-down-|{ Recipe
 
-Recipe }o-down-|{ RecipeIngredient
-Recipe }o-down-|{ RecipeTool
+Recipe }o-left-|{ RecipeIngredient
 RecipeIngredient }o-down-|{ Ingredient
+Recipe }o-right-|{ RecipeTool
 RecipeTool }o-down-|{ Tool
 
-Recipe }|-up-|{ Step
+Recipe }|-down-|{ Step
+Meal }|-down-|{ RecipeMeal
+Recipe }|-up-|{ RecipeMeal
 @enduml
