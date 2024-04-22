@@ -6,5 +6,6 @@ public enum Profile
     MangoManager,
     MangoChef,
     Customer,
-    Supplier
+    Supplier,
+    None
 }
