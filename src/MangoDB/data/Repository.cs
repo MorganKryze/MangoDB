@@ -9,5 +9,13 @@ interface IRepository
         string password,
         int order_count,
         string loyalty_rank
-    ) { }
+    )
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<List<string>> GetCustomers(int limit)
+    {
+        throw new NotImplementedException();
+    }
 }

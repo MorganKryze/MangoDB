@@ -35,20 +35,46 @@ public class RepositoryImplementation : IRepository
         string loyalty_rank
     )
     {
-        using (var cmd = new NpgsqlCommand())
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, @r)";
+        cmd.Parameters.AddWithValue("e", email);
+        cmd.Parameters.AddWithValue("f", first_name);
+        cmd.Parameters.AddWithValue("l", last_name);
+        cmd.Parameters.AddWithValue("p", password);
+        cmd.Parameters.AddWithValue("o", order_count);
+        cmd.Parameters.AddWithValue("r", loyalty_rank);
+
+        cmd.ExecuteNonQuery();
+    }
+
+    public static List<List<string>> GetCustomers(int limit)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText = "SELECT * FROM customer LIMIT @l";
+        cmd.Parameters.AddWithValue("l", limit);
+
+        using var reader = cmd.ExecuteReader();
+        List<List<string>> customers = new();
+        while (reader.Read())
         {
-            cmd.Connection = conn;
-
-            cmd.CommandText =
-                "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, CAST(@r AS loyalty_rank))";
-            cmd.Parameters.AddWithValue("e", email);
-            cmd.Parameters.AddWithValue("f", first_name);
-            cmd.Parameters.AddWithValue("l", last_name);
-            cmd.Parameters.AddWithValue("p", password);
-            cmd.Parameters.AddWithValue("o", order_count);
-            cmd.Parameters.AddWithValue("r", loyalty_rank);
-
-            cmd.ExecuteNonQuery();
+            List<string> customer = new();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                if (i == 3)
+                {
+                    customer.Add("********");
+                    continue;
+                }
+                string value = reader[i]?.ToString() ?? string.Empty;
+                customer.Add(value);
+            }
+            customers.Add(customer);
         }
+        return customers;
     }
 }

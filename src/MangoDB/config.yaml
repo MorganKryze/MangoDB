@@ -13,5 +13,5 @@ loyalty_ranks:
     discount: 0.1
   - name: "Gold"
     min_points: 100
-    max_points: 
+    max_points: 500
     discount: 0.20

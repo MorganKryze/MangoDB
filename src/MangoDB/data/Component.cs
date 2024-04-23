@@ -40,7 +40,8 @@ public class Component
 
     public static InteractionEventArgs<string>? GetPassword(string? defaultValue = null)
     {
-        Prompt passwordPrompt = new("Please enter a password:", defaultValue);
+        Prompt passwordPrompt =
+            new("Please enter a password:", defaultValue, style: PromptInputStyle.Secret);
         Window.AddElement(passwordPrompt);
 
         Window.ActivateElement(passwordPrompt);

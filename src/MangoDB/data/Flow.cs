@@ -72,15 +72,76 @@ public class Flow
                     [
                         "Error",
                         "An error occurred when trying to create the user.",
-                        "Try again later."
+                        "The operation will be cancelled."
                     ],
                     rightOption: "OK"
                 );
             Window.AddElement(errorDialog);
             Window.ActivateElement(errorDialog);
+
+            Window.RemoveElement(errorDialog);
             return false;
         }
 
         return true;
+    }
+
+    public static bool ViewCustomersTable()
+    {
+        try
+        {
+            IntSelector limitSelector =
+                new("Select the number of customers to view", min: 3, max: 20, start: 10, step: 1);
+            Window.AddElement(limitSelector);
+
+            Window.ActivateElement(limitSelector);
+            var limitResp = limitSelector.GetResponse();
+            if (limitResp!.Status is not Status.Selected)
+            {
+                Window.RemoveElement(limitSelector);
+                return false;
+            }
+
+            var customers = RepositoryImplementation.GetCustomers(limitResp.Value);
+
+            TableView customersTable =
+                new(
+                    title: $"Customers (first {limitResp.Value})",
+                    headers: new List<string>()
+                    {
+                        "email",
+                        "first_name",
+                        "last_name",
+                        "password",
+                        "orders_count",
+                        "rank"
+                    },
+                    lines: customers
+                );
+
+            Window.AddElement(customersTable);
+            Window.Render(customersTable);
+            Window.Freeze();
+
+            Window.RemoveElement(customersTable);
+            return true;
+        }
+        catch (Exception)
+        {
+            Dialog errorDialog =
+                new(
+                    [
+                        "Error",
+                        "An error occurred when trying to fetch the customers.",
+                        "The operation will be cancelled."
+                    ],
+                    rightOption: "OK"
+                );
+            Window.AddElement(errorDialog);
+            Window.ActivateElement(errorDialog);
+
+            Window.RemoveElement(errorDialog);
+            return false;
+        }
     }
 }
