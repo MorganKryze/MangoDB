@@ -16,7 +16,22 @@ public class Administrator
             switch (homeMenuResponse!.Value)
             {
                 case 0:
-                    Flow.CreateCustomer();
+                    bool userCreation = Flow.CreateCustomer();
+                    if (!userCreation)
+                    {
+                        Dialog userCreationDialog =
+                            new(
+                                [
+                                    "User creation cancelled",
+                                    string.Empty,
+                                    "The user creation process was cancelled.",
+                                    "You may try again later."
+                                ],
+                                rightOption: "OK"
+                            );
+                        Window.AddElement(userCreationDialog);
+                        Window.ActivateElement(userCreationDialog);
+                    }
                     break;
                 case 1:
                     Dialog logoutDialog =

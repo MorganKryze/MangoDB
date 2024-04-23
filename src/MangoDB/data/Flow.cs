@@ -51,7 +51,7 @@ public class Flow
         }
         else
         {
-            passwordField = resp.Value;
+            passwordField = Tool.Hash(resp.Value);
         }
 
         try
