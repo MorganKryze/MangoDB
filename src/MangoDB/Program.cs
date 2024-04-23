@@ -14,6 +14,7 @@ class Program
 
         Redirection();
 
+        RepositoryImplementation.CloseConnection();
         Window.Close();
     }
 
@@ -122,8 +123,8 @@ class Program
             case Profile.Supplier:
                 // TODO: Add Supplier method
                 break;
-            case Profile.None:
-                break;
+            default:
+                return;
         }
     }
 }

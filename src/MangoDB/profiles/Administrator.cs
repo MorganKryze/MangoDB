@@ -12,10 +12,11 @@ public class Administrator
         {
             Window.ActivateElement(homeMenu);
             var homeMenuResponse = homeMenu.GetResponse();
+
             switch (homeMenuResponse!.Value)
             {
                 case 0:
-                    // TODO: Add CreateNewUser method
+                    Flow.CreateCustomer();
                     break;
                 case 1:
                     Dialog logoutDialog =

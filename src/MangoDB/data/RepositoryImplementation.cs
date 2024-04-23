@@ -2,7 +2,7 @@ namespace MangoDB;
 
 public class RepositoryImplementation : IRepository
 {
-    private static string connectionString = string.Empty;
+    private static Npgsql.NpgsqlConnection? conn;
 
     public static void InitRepository()
     {
@@ -14,7 +14,16 @@ public class RepositoryImplementation : IRepository
         builder.Append("Username=" + variables["DB_USER"] + ";");
         builder.Append("Password=" + variables["DB_PASSWORD"] + ";");
         builder.Append("Database=" + variables["DB_NAME"] + ";");
-        connectionString = builder.ToString();
+
+        string connectionString = builder.ToString();
+
+        conn = new NpgsqlConnection(connectionString);
+        conn.Open();
+    }
+
+    public static void CloseConnection()
+    {
+        conn!.Close();
     }
 
     public static void CreateCustomer(
@@ -26,27 +35,20 @@ public class RepositoryImplementation : IRepository
         string loyalty_rank
     )
     {
-        using (var conn = new NpgsqlConnection(connectionString))
+        using (var cmd = new NpgsqlCommand())
         {
-            conn.Open();
+            cmd.Connection = conn;
 
-            using (var cmd = new NpgsqlCommand())
-            {
-                cmd.Connection = conn;
+            cmd.CommandText =
+                "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, CAST(@r AS loyalty_rank))";
+            cmd.Parameters.AddWithValue("e", email);
+            cmd.Parameters.AddWithValue("f", first_name);
+            cmd.Parameters.AddWithValue("l", last_name);
+            cmd.Parameters.AddWithValue("p", password);
+            cmd.Parameters.AddWithValue("o", order_count);
+            cmd.Parameters.AddWithValue("r", loyalty_rank);
 
-                cmd.CommandText =
-                    "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, CAST(@r AS loyalty_rank))";
-                cmd.Parameters.AddWithValue("e", email);
-                cmd.Parameters.AddWithValue("f", first_name);
-                cmd.Parameters.AddWithValue("l", last_name);
-                cmd.Parameters.AddWithValue("p", password);
-                cmd.Parameters.AddWithValue("o", order_count);
-                cmd.Parameters.AddWithValue("r", loyalty_rank);
-
-                cmd.ExecuteNonQuery();
-            }
-
-            conn.Close();
+            cmd.ExecuteNonQuery();
         }
     }
 }
