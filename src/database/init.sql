@@ -1,3 +1,5 @@
+\c mangodb
+
 CREATE TABLE loyalty_ranks (
     name VARCHAR(255) PRIMARY KEY, min_points INT, max_points INT, discount DECIMAL(3, 2)
 );
@@ -20,34 +22,34 @@ INSERT INTO
         email, first_name, last_name, password, order_count, loyalty_rank
     )
 VALUES (
-        'john.doe@example.com', 'John', 'Doe', 'jDoe123!', 8, 'Classic'
+        'john.doe@example.com', 'John', 'Doe', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 8, 'Classic'
     ),
     (
-        'jane.smith@example.com', 'Jane', 'Smith', 'jSmith456!', 25, 'Bronze'
+        'jane.smith@example.com', 'Jane', 'Smith', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 25, 'Bronze'
     ),
     (
-        'mike.jones@example.com', 'Mike', 'Jones', 'mJones789!', 120, 'Gold'
+        'mike.jones@example.com', 'Mike', 'Jones', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 120, 'Gold'
     ),
     (
-        'sarah.johnson@example.com', 'Sarah', 'Johnson', 'sJohnson321!', 45, 'Bronze'
+        'sarah.johnson@example.com', 'Sarah', 'Johnson', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 45, 'Bronze'
     ),
     (
-        'paul.williams@example.com', 'Paul', 'Williams', 'pWilliams654!', 60, 'Silver'
+        'paul.williams@example.com', 'Paul', 'Williams', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 60, 'Silver'
     ),
     (
-        'lisa.brown@example.com', 'Lisa', 'Brown', 'lBrown987!', 30, 'Bronze'
+        'lisa.brown@example.com', 'Lisa', 'Brown', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 30, 'Bronze'
     ),
     (
-        'james.davis@example.com', 'James', 'Davis', 'jDavis654!', 40, 'Bronze'
+        'james.davis@example.com', 'James', 'Davis', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 40, 'Bronze'
     ),
     (
-        'patricia.miller@example.com', 'Patricia', 'Miller', 'pMiller321!', 50, 'Silver'
+        'patricia.miller@example.com', 'Patricia', 'Miller', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 50, 'Silver'
     ),
     (
-        'robert.wilson@example.com', 'Robert', 'Wilson', 'rWilson987!', 60, 'Silver'
+        'robert.wilson@example.com', 'Robert', 'Wilson', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 60, 'Silver'
     ),
     (
-        'linda.moore@example.com', 'Linda', 'Moore', 'lMoore654!', 70, 'Gold'
+        'linda.moore@example.com', 'Linda', 'Moore', '96D9632F363564CC3032521409CF22A852F2032EEC099ED5967C0D000CEC607A', 70, 'Gold'
     );
 
 CREATE TABLE mango_manager (
@@ -59,5 +61,5 @@ INSERT INTO
         email, first_name, last_name, password, working_hours, salary
     )
 VALUES (
-        'manager@mango.fr', 'Manager', 'Smith', 'mPassword123!', '08:00:00', 5000.00
+        'admin', 'Manager', 'Smith', '2BB80D537B1DA3E38BD30361AA855686BDE0EACD7162FEF6A25FE97BF527A25B', '08:00:00', 5000.00
     );
