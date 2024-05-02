@@ -21,26 +21,10 @@ entity Order
     <b>     | status: [Pending, In Progress, Completed]
 }
 
-entity OrderDeal ##[dashed]
+entity OrderRecipe ##[dashed]
 {
-    {static}<b>PK ,FK1 | order_time: TIMESTAMP
-    {static}<b>PK ,FK2 | deal_name: VARCHAR(255)
-    --
-    <b>     | quantity: INT
-}
-
-entity Deal
-{
-    {static}<b>PK | name: VARCHAR(255)
-    --
-    <b>     | price: FLOAT
-    <b>     | preparation_time: TIME
-}
-
-entity RecipeDeal ##[dashed]
-{
-    {static}<b>PK , FK1 | recipe_name: VARCHAR(255)
-    {static}<b>PK , FK2 | deal_name: VARCHAR(255)
+    {static}<b>PK , FK1 | order_time: TIMESTAMP
+    {static}<b>PK , FK2 | recipe_name: VARCHAR(255)
     --
     <b>     | quantity: INT
 }
@@ -137,8 +121,7 @@ MangoChef ||-right-o{ Order
 SupplierCompany ||-down-o{ Ingredient
 
 Customer ||-down-o{ Order
-Order  ||-down-|{ OrderDeal
-OrderDeal }o-down-|| Deal
+Order  ||-down-|{ OrderRecipe
 
 Recipe ||-down-|{ RecipeIngredient
 RecipeIngredient }o-up-|| Ingredient
@@ -146,6 +129,5 @@ Recipe ||-down-|{ RecipeTool
 RecipeTool }o-up-|| Tool
 
 Recipe ||-down-|{ Step
-Deal ||-down-|{ RecipeDeal
-Recipe ||-up-|{ RecipeDeal
+Recipe ||-up-|{ OrderRecipe
 @enduml
