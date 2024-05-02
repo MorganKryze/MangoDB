@@ -129,5 +129,5 @@ Recipe ||-down-|{ RecipeTool
 RecipeTool }o-up-|| Tool
 
 Recipe ||-down-|{ Step
-Recipe ||-up-|{ OrderRecipe
+Recipe ||-up-o{ OrderRecipe
 @enduml

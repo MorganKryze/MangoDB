@@ -36,18 +36,10 @@ CREATE TABLE "order" (
     "time" TIMESTAMP PRIMARY KEY, "customer_email" VARCHAR(255) REFERENCES "customer" ("email"), "mango_chef_email" VARCHAR(255) REFERENCES "mango_chef" ("email"), "price" FLOAT, "status" "order_status"
 );
 
-CREATE TABLE "deal" (
-    "name" VARCHAR(255) PRIMARY KEY, "price" FLOAT, "preparation_time" TIME
-);
-
-CREATE TABLE "order_deal" (
-    "order_time" TIMESTAMP REFERENCES "order" ("time"), "deal_name" VARCHAR(255) REFERENCES "deal" ("name"), "quantity" INT, PRIMARY KEY ("order_time", "deal_name")
-);
-
 CREATE TABLE "recipe" ("name" VARCHAR(255) PRIMARY KEY);
 
-CREATE TABLE "recipe_deal" (
-    "recipe_name" VARCHAR(255) REFERENCES "recipe" ("name"), "deal_name" VARCHAR(255) REFERENCES "deal" ("name"), "quantity" INT, PRIMARY KEY ("recipe_name", "deal_name")
+CREATE TABLE "order_recipe" (
+    "order_time" TIMESTAMP REFERENCES "order" ("time"), "recipe_name" VARCHAR(255) REFERENCES "recipe" ("name"), "quantity" INT, PRIMARY KEY ("order_time", "recipe_name")
 );
 
 CREATE TABLE "step" (
@@ -131,15 +123,3 @@ INSERT INTO "order" ("time", "customer_email", "mango_chef_email", "price", "sta
 VALUES 
 ('2022-01-01 10:00:00', 'john.doe@example.com', 'chef1@example.com', 20.00, 'Completed'),
 ('2022-01-02 11:00:00', 'jane.smith@example.com', 'chef2@example.com', 25.00, 'In Progress');
-
--- Insert into deal
-INSERT INTO "deal" ("name", "price", "preparation_time")
-VALUES 
-('Deal One', 10.00, '00:30:00'),
-('Deal Two', 15.00, '00:45:00');
-
--- Insert into order_deal
-INSERT INTO "order_deal" ("order_time", "deal_name", "quantity")
-VALUES 
-('2022-01-01 10:00:00', 'Deal One', 2),
-('2022-01-02 11:00:00', 'Deal Two', 1);
