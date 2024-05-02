@@ -8,11 +8,10 @@ entity Customer
     <b>     | first_name: VARCHAR(255)
     <b>     | last_name: VARCHAR(255)
     <b>     | password: VARCHAR(255)
-    <b>     | order_count: INT
     <b>     | loyalty_rank: [Bronze, Silver, Gold]
 }
 
-entity Order ##[dashed]
+entity Order
 {
     {static}<b>PK | time: TIMESTAMP
     --
@@ -22,15 +21,15 @@ entity Order ##[dashed]
     <b>     | status: [Pending, In Progress, Completed]
 }
 
-entity OrderMeal ##[dashed]
+entity OrderDeal ##[dashed]
 {
     {static}<b>PK ,FK1 | order_time: TIMESTAMP
-    {static}<b>PK ,FK2 | meal_name: VARCHAR(255)
+    {static}<b>PK ,FK2 | deal_name: VARCHAR(255)
     --
     <b>     | quantity: INT
 }
 
-entity Meal ##[dashed]
+entity Deal
 {
     {static}<b>PK | name: VARCHAR(255)
     --
@@ -40,21 +39,20 @@ entity Meal ##[dashed]
     <b>     | preparation_time: TIME
 }
 
-entity RecipeMeal ##[dashed]
+entity RecipeDeal ##[dashed]
 {
     {static}<b>PK , FK1 | recipe_name: VARCHAR(255)
-    {static}<b>PK , FK2 | meal_name: VARCHAR(255)
+    {static}<b>PK , FK2 | deal_name: VARCHAR(255)
     --
     <b>     | quantity: INT
 }
 
-entity Recipe ##[dashed]
+entity Recipe
 {
     {static}<b>PK | name: VARCHAR(255)
     --
     <b>FK1 | ingredient_name: VARCHAR(255)
     <b>FK2 | tool_name: VARCHAR(255)
-    <b>     | time: TIME
 }
 
 entity Step ##[dashed]
@@ -87,9 +85,10 @@ entity Ingredient
 {
     {static}<b>PK | name: VARCHAR(255)
     --
+    <b>FK1 | supplier_email: VARCHAR(255) 
     <b>     | price: FLOAT
     <b>     | calories : FLOAT
-    <b>     | availability: BOOL
+    <b>     | in_stock: INT
     <b>     | allergens: VARCHAR(255)
     <b>     | country: VARCHAR(255)
     <b>     | region: VARCHAR(255)
@@ -100,7 +99,7 @@ entity Tool
     {static}<b>PK | name: VARCHAR(255)
     --
     <b>     | price: FLOAT
-    <b>     | availability: BOOL
+    <b>     | in_stock: INT
 }
 
 
@@ -108,6 +107,7 @@ entity SupplierCompany
 {   
     {static}<b>PK | email: VARCHAR(255)
     --
+    <b>FK1 | manager_email: VARCHAR(255)
     <b>     | name: VARCHAR(255)
     <b>     | password: VARCHAR(255)
     <b>     | address: VARCHAR(255)
@@ -118,6 +118,7 @@ entity MangoChef
 {
     {static}<b>PK | email: VARCHAR(255)
     --
+    <b>FK1 | manager_email: VARCHAR(255)
     <b>     | first_name: VARCHAR(255)
     <b>     | last_name: VARCHAR(255)
     <b>     | password: VARCHAR(255)
@@ -136,22 +137,22 @@ entity MangoManager
     <b>     | salary: FLOAT
 }
 
-MangoManager ||.down-|{ SupplierCompany
-MangoManager ||.up..|{ MangoChef
+MangoManager ||-down-o{ SupplierCompany
+MangoManager ||-up-o{ MangoChef
 MangoChef ||-right-o{ Order
 
-SupplierCompany ||.down-|{ Ingredient
+SupplierCompany ||-down-o{ Ingredient
 
-Customer ||.down-o{ Order
-Order  }o-down-|{ OrderMeal
-OrderMeal }o-down-|{ Meal
+Customer ||-down-o{ Order
+Order  ||-down-|{ OrderDeal
+OrderDeal }o-down-|| Deal
 
-Recipe }o-left-|{ RecipeIngredient
-RecipeIngredient }o-down-|{ Ingredient
-Recipe }o-up-|{ RecipeTool
-RecipeTool }o-down-|{ Tool
+Recipe ||-down-|{ RecipeIngredient
+RecipeIngredient }o-up-|| Ingredient
+Recipe ||-down-|{ RecipeTool
+RecipeTool }o-up-|| Tool
 
 Recipe }|-down-|{ Step
-Meal }|-down-|{ RecipeMeal
-Recipe }|-up-|{ RecipeMeal
+Deal }|-down-|{ RecipeDeal
+Recipe }|-up-|{ RecipeDeal
 @enduml
