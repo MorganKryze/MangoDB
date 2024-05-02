@@ -83,9 +83,8 @@ entity Ingredient
     <b>     | price: FLOAT
     <b>     | calories : FLOAT
     <b>     | in_stock: INT
-    <b>     | allergens: VARCHAR(255)
+    <b>     | allergen: VARCHAR(255)
     <b>     | country: VARCHAR(255)
-    <b>     | region: VARCHAR(255)
 }
 
 entity Tool
