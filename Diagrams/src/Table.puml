@@ -33,8 +33,6 @@ entity Deal
 {
     {static}<b>PK | name: VARCHAR(255)
     --
-    <b>FK1 | order_time: TIMESTAMP
-    <b>FK2 | recipe_name: VARCHAR(255)
     <b>     | price: FLOAT
     <b>     | preparation_time: TIME
 }
@@ -51,15 +49,11 @@ entity Recipe
 {
     {static}<b>PK | name: VARCHAR(255)
     --
-    <b>FK1 | ingredient_name: VARCHAR(255)
-    <b>FK2 | tool_name: VARCHAR(255)
 }
 
 entity Step ##[dashed]
 {
     {static}<b>PK , FK1 | recipe_name: VARCHAR(255)
-    {static}<b>PK , FK2 | ingredient_name: VARCHAR(255)
-    {static}<b>PK , FK3 | tool_name: VARCHAR(255)
     --
     <b>     | description: VARCHAR(255)
     <b>     | time: TIME
@@ -152,7 +146,7 @@ RecipeIngredient }o-up-|| Ingredient
 Recipe ||-down-|{ RecipeTool
 RecipeTool }o-up-|| Tool
 
-Recipe }|-down-|{ Step
-Deal }|-down-|{ RecipeDeal
-Recipe }|-up-|{ RecipeDeal
+Recipe ||-down-|{ Step
+Deal ||-down-|{ RecipeDeal
+Recipe ||-up-|{ RecipeDeal
 @enduml
