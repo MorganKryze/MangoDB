@@ -18,4 +18,14 @@ interface IRepository
     {
         throw new NotImplementedException();
     }
+
+    public static bool CheckUser(string email, string table)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static bool CheckPassword(string email, string password, string table)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -2,6 +2,46 @@ namespace MangoDB;
 
 public class Component
 {
+    public static void WelcomeMessage()
+    {
+        Dialog welcomeDialog =
+            new(
+                [
+                    "Welcome to the MangoDB smoothie shop",
+                    "Please enter your ID and password to continue."
+                ],
+                rightOption: "OK"
+            );
+        Window.AddElement(welcomeDialog);
+        Window.ActivateElement(welcomeDialog);
+        Window.RemoveElement(welcomeDialog);
+    }
+
+    public static InteractionEventArgs<int>? GetProfile()
+    {
+        string[] options = { "Mango Manager", "Mango Chef", "Customer", "Supplier" };
+        ScrollingMenu profileSelector = new("Please select a profile:", choices: options);
+        Window.AddElement(profileSelector);
+
+        Window.ActivateElement(profileSelector);
+        var resp = profileSelector.GetResponse();
+        Window.RemoveElement(profileSelector);
+
+        return resp;
+    }
+
+    public static InteractionEventArgs<string>? GetUsername(string? defaultValue = null)
+    {
+        Prompt usernamePrompt = new("Please enter a username:", defaultValue);
+        Window.AddElement(usernamePrompt);
+
+        Window.ActivateElement(usernamePrompt);
+        var resp = usernamePrompt.GetResponse();
+        Window.RemoveElement(usernamePrompt);
+
+        return resp;
+    }
+
     public static InteractionEventArgs<string>? GetEmail(string? defaultValue = null)
     {
         Prompt emailPrompt = new("Please enter an email:", defaultValue);

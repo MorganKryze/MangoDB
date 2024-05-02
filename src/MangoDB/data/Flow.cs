@@ -2,6 +2,103 @@ namespace MangoDB;
 
 public class Flow
 {
+    public static bool Authentication()
+    {
+        Component.WelcomeMessage();
+
+        var profile = Component.GetProfile();
+        if (profile!.Status is not Status.Selected)
+        {
+            return false;
+        }
+
+        string profileSelected = profile.Value switch
+        {
+            0 => "mango_manager",
+            1 => "mango_chef",
+            2 => "customer",
+            3 => "supplier",
+            _ => "Unknown"
+        };
+
+        Prompt id = new("Please enter your ID (email or username):");
+        Dialog wrongId =
+            new(
+                ["Wrong ID", string.Empty, "The ID you entered has no match in the database."],
+                "Quit",
+                "Try again"
+            );
+        Window.AddElement(id, wrongId);
+
+        string idValue;
+        while (true)
+        {
+            Window.ActivateElement(id);
+            var idResponse = id.GetResponse();
+            if (!RepositoryImplementation.CheckUser(idResponse!.Value, profileSelected))
+            {
+                Window.ActivateElement(wrongId);
+                var wrongIdResponse = wrongId.GetResponse();
+                if (wrongIdResponse!.Value == DialogOption.Left)
+                {
+                    return false;
+                }
+                continue;
+            }
+            idValue = idResponse.Value;
+            break;
+        }
+
+        Prompt password = new("Please enter your password:", style: PromptInputStyle.Secret);
+        Dialog wrongPassword =
+            new(
+                ["Wrong Password", string.Empty, "The password you entered is incorrect."],
+                "Quit",
+                "Try again"
+            );
+        Window.AddElement(password, wrongPassword);
+
+        string passwordValue;
+        while (true)
+        {
+            Window.ActivateElement(password);
+            var passwordResponse = password.GetResponse();
+            string hashedPassword = Tool.Hash(passwordResponse!.Value);
+            if (!RepositoryImplementation.CheckPassword(idValue, hashedPassword, profileSelected))
+            {
+                Window.ActivateElement(wrongPassword);
+                var wrongPasswordResponse = wrongPassword.GetResponse();
+                if (wrongPasswordResponse!.Value == DialogOption.Left)
+                {
+                    return false;
+                }
+                continue;
+            }
+            passwordValue = passwordResponse.Value;
+            break;
+        }
+
+        FakeLoadingBar profileLoadingBar = new("[ Loading profile... ]");
+        Window.AddElement(profileLoadingBar);
+        Window.ActivateElement(profileLoadingBar);
+
+        Program.user = profileSelected switch
+        {
+            "mango_manager" => Profile.MangoManager,
+            "mango_chef" => Profile.MangoChef,
+            "customer" => Profile.Customer,
+            "supplier" => Profile.Supplier,
+            _ => Profile.None
+        };
+
+        Window.RemoveElement(id);
+        Window.RemoveElement(password);
+        Window.RemoveElement(wrongId);
+        Window.RemoveElement(wrongPassword);
+        Window.RemoveElement(profileLoadingBar);
+        return true;
+    }
+
     public static bool CreateCustomer()
     {
         string emailField = "",
@@ -143,5 +240,28 @@ public class Flow
             Window.RemoveElement(errorDialog);
             return false;
         }
+    }
+
+    public static bool ShowHashed()
+    {
+        Prompt askText = new("Please enter the text to hash:");
+        Window.AddElement(askText);
+        Window.ActivateElement(askText);
+
+        var textResponse = askText.GetResponse();
+        if (textResponse!.Status is not Status.Selected)
+        {
+            Window.RemoveElement(askText);
+            return false;
+        }
+        string hashed = Tool.Hash(textResponse!.Value);
+        Dialog showHashed =
+            new(["Hashed Text", hashed, "The hashed text is shown above."], rightOption: "OK");
+        Window.AddElement(showHashed);
+        Window.ActivateElement(showHashed);
+
+        Window.RemoveElement(askText);
+        Window.RemoveElement(showHashed);
+        return true;
     }
 }
