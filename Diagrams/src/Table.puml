@@ -33,10 +33,12 @@ entity Recipe
 {
     {static}<b>PK | name: VARCHAR(255)
     --
+    <b>     | price: FLOAT
 }
 
 entity Step ##[dashed]
 {
+    {static}<b>PK | step_number: INT
     {static}<b>PK , FK1 | recipe_name: VARCHAR(255)
     --
     <b>     | description: VARCHAR(255)
