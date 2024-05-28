@@ -180,10 +180,23 @@ public class Flow
                 loyaltyRankField
             );
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            Dialog errorDialog =
-                new(
+            Dialog errorDialog;
+            if (e.Message.Substring(0, 5) == "23505")
+            {
+                errorDialog = new(
+                    [
+                        "Error",
+                        "The email you entered is already in use.",
+                        "Please try again with a different email."
+                    ],
+                    rightOption: "OK"
+                );
+            }
+            else
+            {
+                errorDialog = new(
                     [
                         "Error",
                         "An error occurred when trying to create the user.",
@@ -191,6 +204,7 @@ public class Flow
                     ],
                     rightOption: "OK"
                 );
+            }
             Window.AddElement(errorDialog);
             Window.ActivateElement(errorDialog);
 
