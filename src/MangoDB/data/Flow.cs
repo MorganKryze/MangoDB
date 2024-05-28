@@ -82,7 +82,7 @@ public class Flow
         Window.AddElement(profileLoadingBar);
         Window.ActivateElement(profileLoadingBar);
 
-        Program.user = profileSelected switch
+        Navigation.user = profileSelected switch
         {
             "mango_manager" => Profile.MangoManager,
             "mango_chef" => Profile.MangoChef,
