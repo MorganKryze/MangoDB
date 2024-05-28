@@ -50,7 +50,7 @@ public class RepositoryImplementation : IRepository
         cmd.Connection = conn;
 
         cmd.CommandText =
-            "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, @r)";
+            "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, CAST(@r AS loyalty_rank))";
         cmd.Parameters.AddWithValue("e", email);
         cmd.Parameters.AddWithValue("f", first_name);
         cmd.Parameters.AddWithValue("l", last_name);

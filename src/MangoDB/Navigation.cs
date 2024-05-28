@@ -38,15 +38,33 @@ public static class Navigation
                 break;
             case Profile.MangoChef:
                 // TODO: Add MangoChef method
+                Core.WriteDebugMessage(lines: "MangoChef method not implemented yet.");
+                Window.Freeze();
                 break;
             case Profile.Customer:
                 Customer.HomePage();
                 break;
             case Profile.Supplier:
                 // TODO: Add Supplier method
+                Core.WriteDebugMessage(lines: "Supplier method not implemented yet.");
+                Window.Freeze();
                 break;
             default:
                 return;
         }
+    }
+
+    public static void LogIn(Profile profile)
+    {
+        user = profile;
+    }
+
+    public static void LogOut()
+    {
+        user = Profile.None;
+        FakeLoadingBar fakeLoadingBar = new("[ Logging out ... ]");
+        Window.AddElement(fakeLoadingBar);
+        Window.ActivateElement(fakeLoadingBar);
+        Window.RemoveElement(fakeLoadingBar);
     }
 }

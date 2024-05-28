@@ -6,15 +6,28 @@ public class Component
     {
         Dialog welcomeDialog =
             new(
-                [
-                    "Welcome to the MangoDB smoothie shop",
-                    "Please enter your ID and password to continue."
-                ],
+                ["Welcome to the MangoDB smoothie shop!", "Press enter to continue."],
                 rightOption: "OK"
             );
         Window.AddElement(welcomeDialog);
         Window.ActivateElement(welcomeDialog);
+
+        var response = welcomeDialog.GetResponse();
+        if (response!.Status == Status.Escaped)
+        {
+            ConfirmExit();
+        }
         Window.RemoveElement(welcomeDialog);
+    }
+
+    public static DialogOption ChooseSignOption()
+    {
+        Dialog signDialog = new(["Do you want to sign in or sign up?"], "Sign up", "Sign in");
+        Window.AddElement(signDialog);
+        Window.ActivateElement(signDialog);
+        var signResponse = signDialog.GetResponse();
+        Window.RemoveElement(signDialog);
+        return signResponse!.Value;
     }
 
     public static InteractionEventArgs<int>? GetProfile()
@@ -32,7 +45,7 @@ public class Component
 
     public static InteractionEventArgs<string>? GetUsername(string? defaultValue = null)
     {
-        Prompt usernamePrompt = new("Please enter a username:", defaultValue);
+        Prompt usernamePrompt = new("Please enter a username:", defaultValue, maxInputLength: 20);
         Window.AddElement(usernamePrompt);
 
         Window.ActivateElement(usernamePrompt);
@@ -44,7 +57,7 @@ public class Component
 
     public static InteractionEventArgs<string>? GetEmail(string? defaultValue = null)
     {
-        Prompt emailPrompt = new("Please enter an email:", defaultValue);
+        Prompt emailPrompt = new("Please enter an email:", defaultValue, maxInputLength: 40);
         Window.AddElement(emailPrompt);
 
         Window.ActivateElement(emailPrompt);
@@ -56,7 +69,8 @@ public class Component
 
     public static InteractionEventArgs<string>? GetFirstName(string? defaultValue = null)
     {
-        Prompt first_namePrompt = new("Please enter a first name:", defaultValue);
+        Prompt first_namePrompt =
+            new("Please enter a first name:", defaultValue, maxInputLength: 20);
         Window.AddElement(first_namePrompt);
 
         Window.ActivateElement(first_namePrompt);
@@ -68,7 +82,7 @@ public class Component
 
     public static InteractionEventArgs<string>? GetLastName(string? defaultValue = null)
     {
-        Prompt last_namePrompt = new("Please enter a last name:", defaultValue);
+        Prompt last_namePrompt = new("Please enter a last name:", defaultValue, maxInputLength: 20);
         Window.AddElement(last_namePrompt);
 
         Window.ActivateElement(last_namePrompt);
@@ -81,7 +95,12 @@ public class Component
     public static InteractionEventArgs<string>? GetPassword(string? defaultValue = null)
     {
         Prompt passwordPrompt =
-            new("Please enter a password:", defaultValue, style: PromptInputStyle.Secret);
+            new(
+                "Please enter a password:",
+                defaultValue,
+                style: PromptInputStyle.Secret,
+                maxInputLength: 30
+            );
         Window.AddElement(passwordPrompt);
 
         Window.ActivateElement(passwordPrompt);
@@ -101,5 +120,20 @@ public class Component
         Window.RemoveElement(order_count);
 
         return resp;
+    }
+
+    public static void ConfirmExit()
+    {
+        Dialog exitDialog = new(["Are you sure you want to exit?"], "No", "Yes");
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+        var resp = exitDialog.GetResponse();
+        Window.RemoveElement(exitDialog);
+
+        if (resp!.Value == DialogOption.Right)
+        {
+            RepositoryImplementation.CloseConnection();
+            Window.Close();
+        }
     }
 }

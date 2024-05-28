@@ -8,12 +8,15 @@ class Program
 
         Navigation.Setup();
 
+        Component.WelcomeMessage();
+
+        SignOptions:
+        Flow.Sign();
+
         if (Flow.Authentication())
         {
             Navigation.Redirection();
         }
-
-        RepositoryImplementation.CloseConnection();
-        Window.Close();
+        goto SignOptions;
     }
 }

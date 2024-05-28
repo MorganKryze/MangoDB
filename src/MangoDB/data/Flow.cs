@@ -2,26 +2,33 @@ namespace MangoDB;
 
 public class Flow
 {
+    private static readonly string[] tables =
+    [
+        "mango_manager",
+        "mango_chef",
+        "customer",
+        "supplier_company",
+    ];
+
+    public static void Sign()
+    {
+        SignOption:
+        var response = Component.ChooseSignOption();
+        if (response == DialogOption.None)
+        {
+            Component.ConfirmExit();
+            goto SignOption;
+        }
+        else if (response == DialogOption.Left)
+        {
+            CreateCustomer();
+            goto SignOption;
+        }
+    }
+
     public static bool Authentication()
     {
-        Component.WelcomeMessage();
-
-        var profile = Component.GetProfile();
-        if (profile!.Status is not Status.Selected)
-        {
-            return false;
-        }
-
-        string profileSelected = profile.Value switch
-        {
-            0 => "mango_manager",
-            1 => "mango_chef",
-            2 => "customer",
-            3 => "supplier",
-            _ => "Unknown"
-        };
-
-        Prompt id = new("Please enter your ID (email or username):");
+        Prompt id = new("Please enter your email:", maxInputLength: 40);
         Dialog wrongId =
             new(
                 ["Wrong ID", string.Empty, "The ID you entered has no match in the database."],
@@ -30,26 +37,36 @@ public class Flow
             );
         Window.AddElement(id, wrongId);
 
-        string idValue;
+        string idValue = "";
+        string table = "";
         while (true)
         {
             Window.ActivateElement(id);
             var idResponse = id.GetResponse();
-            if (!RepositoryImplementation.CheckUser(idResponse!.Value, profileSelected))
+            for (int i = 0; i < tables.Length; i++)
             {
-                Window.ActivateElement(wrongId);
-                var wrongIdResponse = wrongId.GetResponse();
-                if (wrongIdResponse!.Value == DialogOption.Left)
+                if (RepositoryImplementation.CheckUser(idResponse!.Value, tables[i]))
                 {
-                    return false;
+                    idValue = idResponse!.Value;
+                    table = tables[i];
+                    break;
                 }
-                continue;
+                if (i == tables.Length - 1)
+                {
+                    Window.ActivateElement(wrongId);
+                    var wrongIdResponse = wrongId.GetResponse();
+                    if (wrongIdResponse!.Value == DialogOption.Left)
+                    {
+                        return false;
+                    }
+                    continue;
+                }
             }
-            idValue = idResponse.Value;
             break;
         }
 
-        Prompt password = new("Please enter your password:", style: PromptInputStyle.Secret);
+        Prompt password =
+            new("Please enter your password:", style: PromptInputStyle.Secret, maxInputLength: 30);
         Dialog wrongPassword =
             new(
                 ["Wrong Password", string.Empty, "The password you entered is incorrect."],
@@ -64,7 +81,7 @@ public class Flow
             Window.ActivateElement(password);
             var passwordResponse = password.GetResponse();
             string hashedPassword = Tool.Hash(passwordResponse!.Value);
-            if (!RepositoryImplementation.CheckPassword(idValue, hashedPassword, profileSelected))
+            if (!RepositoryImplementation.CheckPassword(idValue, hashedPassword, table))
             {
                 Window.ActivateElement(wrongPassword);
                 var wrongPasswordResponse = wrongPassword.GetResponse();
@@ -82,7 +99,7 @@ public class Flow
         Window.AddElement(profileLoadingBar);
         Window.ActivateElement(profileLoadingBar);
 
-        Navigation.user = profileSelected switch
+        Profile userProfile = table switch
         {
             "mango_manager" => Profile.MangoManager,
             "mango_chef" => Profile.MangoChef,
@@ -90,6 +107,7 @@ public class Flow
             "supplier" => Profile.Supplier,
             _ => Profile.None
         };
+        Navigation.LogIn(userProfile);
 
         Window.RemoveElement(id);
         Window.RemoveElement(password);

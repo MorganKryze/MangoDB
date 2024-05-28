@@ -82,17 +82,7 @@ public class MangoManager
                     break;
 
                 case 3:
-                    Dialog logoutDialog =
-                        new(["Are you sure you want to log out and exit?"], "No", "Yes");
-                    Window.AddElement(logoutDialog);
-                    Window.ActivateElement(logoutDialog);
-                    var logoutResponse = logoutDialog.GetResponse();
-                    Window.RemoveElement(logoutDialog);
-                    if (logoutResponse!.Value == DialogOption.Right)
-                    {
-                        Window.RemoveElement(homeMenu);
-                        return;
-                    }
+                    Navigation.LogOut();
                     break;
             }
         }
