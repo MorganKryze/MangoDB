@@ -42,7 +42,6 @@ public class RepositoryImplementation : IRepository
         string first_name,
         string last_name,
         string password,
-        int order_count,
         string loyalty_rank
     )
     {
@@ -50,12 +49,11 @@ public class RepositoryImplementation : IRepository
         cmd.Connection = conn;
 
         cmd.CommandText =
-            "INSERT INTO customer (email, first_name, last_name, password, order_count, loyalty_rank) VALUES (@e, @f, @l, @p, @o, CAST(@r AS loyalty_rank))";
+            "INSERT INTO customer (email, first_name, last_name, password, loyalty_rank) VALUES (@e, @f, @l, @p, CAST(@r AS loyalty_rank))";
         cmd.Parameters.AddWithValue("e", email);
         cmd.Parameters.AddWithValue("f", first_name);
         cmd.Parameters.AddWithValue("l", last_name);
         cmd.Parameters.AddWithValue("p", password);
-        cmd.Parameters.AddWithValue("o", order_count);
         cmd.Parameters.AddWithValue("r", loyalty_rank);
 
         cmd.ExecuteNonQuery();
@@ -87,6 +85,39 @@ public class RepositoryImplementation : IRepository
             customers.Add(customer);
         }
         return customers;
+    }
+
+    public static List<string> GetCustomerInfo(string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT first_name, last_name, loyalty_rank FROM customer WHERE email = @e";
+        cmd.Parameters.AddWithValue("e", email);
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read();
+        List<string> customer = new();
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            string value = reader[i]?.ToString() ?? string.Empty;
+            customer.Add(value);
+        }
+        return customer;
+    }
+
+    public static int GetCustomerOrdersCount(string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText = "SELECT COUNT(*) FROM \"order\" WHERE customer_email = @e";
+        cmd.Parameters.AddWithValue("e", email);
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read();
+        return reader.GetInt32(0);
     }
 
     public static bool CheckUser(string email, string table)

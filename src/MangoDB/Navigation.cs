@@ -2,7 +2,8 @@ namespace MangoDB;
 
 public static class Navigation
 {
-    public static Profile user = Profile.None;
+    public static Profile UserProfile = Profile.None;
+    public static string UserEmail = "";
 
     public static void Setup()
     {
@@ -31,7 +32,7 @@ public static class Navigation
 
     public static void Redirection()
     {
-        switch (user)
+        switch (UserProfile)
         {
             case Profile.MangoManager:
                 MangoManager.HomePage();
@@ -54,14 +55,16 @@ public static class Navigation
         }
     }
 
-    public static void LogIn(Profile profile)
+    public static void LogIn(Profile profile, string email)
     {
-        user = profile;
+        UserProfile = profile;
+        UserEmail = email;
     }
 
     public static void LogOut()
     {
-        user = Profile.None;
+        UserProfile = Profile.None;
+        UserEmail = "";
         FakeLoadingBar fakeLoadingBar = new("[ Logging out ... ]");
         Window.AddElement(fakeLoadingBar);
         Window.ActivateElement(fakeLoadingBar);

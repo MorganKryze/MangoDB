@@ -7,7 +7,7 @@ public class MangoManager
         ScrollingMenu homeMenu =
             new(
                 "Please choose an action:",
-                choices: ["View customers", "Create a new customer", "Hash text", "Log out & Exit"]
+                choices: ["View customers", "Create a new customer", "Hash text", "Log out"]
             );
         Window.AddElement(homeMenu);
 
@@ -83,7 +83,7 @@ public class MangoManager
 
                 case 3:
                     Navigation.LogOut();
-                    break;
+                    return;
             }
         }
     }

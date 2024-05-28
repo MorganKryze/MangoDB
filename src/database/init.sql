@@ -9,7 +9,6 @@ CREATE TABLE "customer" (
     "first_name" VARCHAR(255),
     "last_name" VARCHAR(255),
     "password" VARCHAR(255),
-    "order_count" INT,
     "loyalty_rank" "loyalty_rank"
 );
 CREATE TABLE "mango_manager" (

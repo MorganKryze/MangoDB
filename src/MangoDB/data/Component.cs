@@ -122,6 +122,24 @@ public class Component
         return resp;
     }
 
+    public static EmbedText GetCustomerCard(string email)
+    {
+        var info = RepositoryImplementation.GetCustomerInfo(email);
+        var orderCount = RepositoryImplementation.GetCustomerOrdersCount(email);
+        return new EmbedText(
+            [
+                "Personal information:",
+                "",
+                $"First name: {info[0]}",
+                $"Last name: {info[1]}",
+                "",
+                $"Loyalty rank: {info[2]}",
+                $"Order count: {orderCount}"
+            ],
+            placement: Placement.TopRight
+        );
+    }
+
     public static void ConfirmExit()
     {
         Dialog exitDialog = new(["Are you sure you want to exit?"], "No", "Yes");

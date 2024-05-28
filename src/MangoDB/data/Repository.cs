@@ -7,7 +7,6 @@ interface IRepository
         string first_name,
         string last_name,
         string password,
-        int order_count,
         string loyalty_rank
     )
     {
@@ -15,6 +14,16 @@ interface IRepository
     }
 
     public static List<List<string>> GetCustomers(int limit)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<string> GetCustomerInfo(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static int GetCustomerOrdersCount(string email)
     {
         throw new NotImplementedException();
     }

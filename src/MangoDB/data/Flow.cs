@@ -107,7 +107,7 @@ public class Flow
             "supplier" => Profile.Supplier,
             _ => Profile.None
         };
-        Navigation.LogIn(userProfile);
+        Navigation.LogIn(userProfile, idValue);
 
         Window.RemoveElement(id);
         Window.RemoveElement(password);
@@ -123,7 +123,6 @@ public class Flow
             firstNameField = "",
             lastNameField = "",
             passwordField = "";
-        int orderCountField = 0;
         string loyaltyRankField = "Classic";
 
         Email:
@@ -176,7 +175,6 @@ public class Flow
                 firstNameField,
                 lastNameField,
                 passwordField,
-                orderCountField,
                 loyaltyRankField
             );
         }
