@@ -5,3 +5,6 @@ bin
 # Database
 db
 .env
+
+# Vscode
+.vscode
