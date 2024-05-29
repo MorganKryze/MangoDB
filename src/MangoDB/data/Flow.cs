@@ -39,6 +39,7 @@ public class Flow
 
         string idValue = "";
         string table = "";
+        int counter = 0;
         while (true)
         {
             Window.ActivateElement(id);
@@ -73,7 +74,17 @@ public class Flow
                 "Quit",
                 "Try again"
             );
-        Window.AddElement(password, wrongPassword);
+        Dialog failedAuth =
+            new(
+                [
+                    "Authentication failed",
+                    string.Empty,
+                    "The authentication process failed (3 attempts).",
+                    "You may try again later."
+                ],
+                rightOption: "OK"
+            );
+        Window.AddElement(password, wrongPassword, failedAuth);
 
         string passwordValue;
         while (true)
@@ -83,12 +94,19 @@ public class Flow
             string hashedPassword = Tool.Hash(passwordResponse!.Value);
             if (!RepositoryImplementation.CheckPassword(idValue, hashedPassword, table))
             {
+                if (counter == 2)
+                {
+                    Window.ActivateElement(failedAuth);
+                    Window.RemoveElement(id, password, wrongId, wrongPassword, failedAuth);
+                    return false;
+                }
                 Window.ActivateElement(wrongPassword);
                 var wrongPasswordResponse = wrongPassword.GetResponse();
                 if (wrongPasswordResponse!.Value == DialogOption.Left)
                 {
                     return false;
                 }
+                counter++;
                 continue;
             }
             passwordValue = passwordResponse.Value;
@@ -413,5 +431,44 @@ public class Flow
                 return;
             }
         }
+    }
+
+    public static void ViewCustomerOrders()
+    {
+        IntSelector limitSelector =
+            new("Select the number of orders to view:", min: 3, max: 10, start: 5, step: 1);
+        Window.AddElement(limitSelector);
+
+        Window.ActivateElement(limitSelector);
+        var limitResp = limitSelector.GetResponse();
+        if (limitResp!.Status is not Status.Selected)
+        {
+            Window.RemoveElement(limitSelector);
+            return;
+        }
+
+        var orders = RepositoryImplementation.GetCustomerOrders(
+            Navigation.UserEmail,
+            limitResp.Value
+        );
+
+        TableView ordersTable =
+            new(
+                title: $"Orders (first {limitResp.Value})",
+                headers: ["time", "price", "status"],
+                lines: orders
+            );
+
+        Window.AddElement(ordersTable);
+        Window.Render(ordersTable);
+        Dialog ordersDialog =
+            new(
+                [$"Your past {limitResp.Value} orders are shown above.", "Press enter to continue."]
+            );
+        Window.AddElement(ordersDialog);
+        Window.ActivateElement(ordersDialog);
+
+        Window.DeactivateElement(ordersTable);
+        Window.RemoveElement(ordersTable, ordersDialog);
     }
 }

@@ -107,6 +107,31 @@ public class RepositoryImplementation : IRepository
         return customer;
     }
 
+    public static List<List<string>> GetCustomerOrders(string email, int limit)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT time, price, status FROM \"order\" WHERE customer_email = @e LIMIT @l";
+        cmd.Parameters.AddWithValue("e", email);
+        cmd.Parameters.AddWithValue("l", limit);
+
+        using var reader = cmd.ExecuteReader();
+        List<List<string>> orders = new();
+        while (reader.Read())
+        {
+            List<string> order = new();
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string value = reader[i]?.ToString() ?? string.Empty;
+                order.Add(value);
+            }
+            orders.Add(order);
+        }
+        return orders;
+    }
+
     public static int GetCustomerOrdersCount(string email)
     {
         using var cmd = new NpgsqlCommand();

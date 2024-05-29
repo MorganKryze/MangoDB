@@ -28,7 +28,7 @@ public class Customer
                     break;
 
                 case 1:
-                    // Todo
+                    Flow.ViewCustomerOrders();
                     break;
 
                 case 2:

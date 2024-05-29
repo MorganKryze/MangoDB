@@ -23,6 +23,11 @@ interface IRepository
         throw new NotImplementedException();
     }
 
+    public static List<List<string>> GetCustomerOrders(string email, int limit)
+    {
+        throw new NotImplementedException();
+    }
+
     public static int GetCustomerOrdersCount(string email)
     {
         throw new NotImplementedException();
