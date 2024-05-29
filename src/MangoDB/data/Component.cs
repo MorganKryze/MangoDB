@@ -128,13 +128,14 @@ public class Component
         var orderCount = RepositoryImplementation.GetCustomerOrdersCount(email);
         return new EmbedText(
             [
-                "Personal information:",
+                "Personal information:      ",
+                "--------------------",
                 "",
                 $"First name: {info[0]}",
                 $"Last name: {info[1]}",
                 "",
                 $"Loyalty rank: {info[2]}",
-                $"Order count: {orderCount}"
+                $"Orders count: {orderCount}"
             ],
             placement: Placement.TopRight
         );

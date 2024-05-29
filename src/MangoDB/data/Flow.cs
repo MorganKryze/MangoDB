@@ -218,7 +218,7 @@ public class Flow
         try
         {
             IntSelector limitSelector =
-                new("Select the number of customers to view", min: 3, max: 20, start: 10, step: 1);
+                new("Select the number of customers to view", min: 3, max: 15, start: 10, step: 1);
             Window.AddElement(limitSelector);
 
             Window.ActivateElement(limitSelector);
@@ -240,7 +240,6 @@ public class Flow
                         "first_name",
                         "last_name",
                         "password",
-                        "orders_count",
                         "rank"
                     },
                     lines: customers
@@ -250,6 +249,7 @@ public class Flow
             Window.Render(customersTable);
             Window.Freeze();
 
+            Window.DeactivateElement(customersTable);
             Window.RemoveElement(customersTable);
             return true;
         }
@@ -293,5 +293,125 @@ public class Flow
         Window.RemoveElement(askText);
         Window.RemoveElement(showHashed);
         return true;
+    }
+
+    public static void UpdateCustomerFirstName(string email)
+    {
+        EmbedText info = new EmbedText(
+            [
+                "Info note:",
+                "",
+                "Please write down the new first name.",
+                "Do not leave a blank field."
+            ]
+        );
+        Window.AddElement(info);
+        string previousFirstName = RepositoryImplementation.GetCustomerInfo(email)[0];
+        Prompt newFirstNamePrompt =
+            new("Type here the new first name:", previousFirstName, maxInputLength: 20);
+        Window.AddElement(newFirstNamePrompt);
+
+        while (true)
+        {
+            Window.Render(info);
+            Window.ActivateElement(newFirstNamePrompt);
+            var resp = newFirstNamePrompt.GetResponse();
+            Window.DeactivateElement(info);
+            Window.RemoveElement(info, newFirstNamePrompt);
+
+            if (
+                resp!.Status is Status.Selected
+                && resp.Value != previousFirstName
+                && resp.Value != string.Empty
+            )
+            {
+                RepositoryImplementation.UpdateCustomer(email, "first_name", resp.Value);
+                return;
+            }
+            else if (resp!.Status is Status.Escaped)
+            {
+                return;
+            }
+        }
+    }
+
+    public static void UpdateCustomerLastName(string email)
+    {
+        EmbedText info = new EmbedText(
+            [
+                "Info note:",
+                "",
+                "Please write down the new last name.",
+                "Do not leave a blank field."
+            ]
+        );
+        Window.AddElement(info);
+        string previousLastName = RepositoryImplementation.GetCustomerInfo(email)[1];
+        Prompt newLastNamePrompt =
+            new("Type here the new last name:", previousLastName, maxInputLength: 20);
+        Window.AddElement(newLastNamePrompt);
+
+        while (true)
+        {
+            Window.Render(info);
+            Window.ActivateElement(newLastNamePrompt);
+            var resp = newLastNamePrompt.GetResponse();
+            Window.DeactivateElement(info);
+            Window.RemoveElement(info, newLastNamePrompt);
+
+            if (
+                resp!.Status is Status.Selected
+                && resp.Value != previousLastName
+                && resp.Value != string.Empty
+            )
+            {
+                RepositoryImplementation.UpdateCustomer(email, "last_name", resp.Value);
+                return;
+            }
+            else if (resp!.Status is Status.Escaped)
+            {
+                return;
+            }
+        }
+    }
+
+    public static void UpdateCustomerPassword(string email)
+    {
+        EmbedText info = new EmbedText(
+            [
+                "Info note:",
+                "",
+                "Please write down the new password.",
+                "Do not leave a blank field.",
+                "The password should be at least of 8 characters long."
+            ]
+        );
+        Window.AddElement(info);
+        Prompt newPasswordPrompt =
+            new("Type here the new password:", style: PromptInputStyle.Secret, maxInputLength: 30);
+        Window.AddElement(newPasswordPrompt);
+
+        while (true)
+        {
+            Window.Render(info);
+            Window.ActivateElement(newPasswordPrompt);
+            var resp = newPasswordPrompt.GetResponse();
+            Window.DeactivateElement(info);
+            Window.RemoveElement(info, newPasswordPrompt);
+
+            if (
+                resp!.Status is Status.Selected
+                && resp.Value != string.Empty
+                && resp.Value.Length >= 8
+            )
+            {
+                RepositoryImplementation.UpdateCustomer(email, "password", Tool.Hash(resp.Value));
+                return;
+            }
+            else if (resp!.Status is Status.Escaped)
+            {
+                return;
+            }
+        }
     }
 }

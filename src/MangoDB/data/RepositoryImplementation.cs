@@ -120,6 +120,18 @@ public class RepositoryImplementation : IRepository
         return reader.GetInt32(0);
     }
 
+    public static void UpdateCustomer(string email, string field, string value)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText = "UPDATE customer SET " + field + " = @v WHERE email = @e";
+        cmd.Parameters.AddWithValue("v", value);
+        cmd.Parameters.AddWithValue("e", email);
+
+        cmd.ExecuteNonQuery();
+    }
+
     public static bool CheckUser(string email, string table)
     {
         using var cmd = new NpgsqlCommand();

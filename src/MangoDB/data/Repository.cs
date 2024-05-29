@@ -28,6 +28,11 @@ interface IRepository
         throw new NotImplementedException();
     }
 
+    public static void UpdateCustomer(string email, string field, string value)
+    {
+        throw new NotImplementedException();
+    }
+
     public static bool CheckUser(string email, string table)
     {
         throw new NotImplementedException();

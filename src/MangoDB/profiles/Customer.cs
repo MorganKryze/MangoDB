@@ -32,14 +32,57 @@ public class Customer
                     break;
 
                 case 2:
-                    // Todo: Activate the card
+                    bool updateLoop = true;
+                    while (updateLoop)
+                    {
+                        Window.ActivateElement(card);
 
-                    // Todo: Add ScrollingMenu for settings (add back)
+                        ScrollingMenu settingsMenu =
+                            new(
+                                "Please choose field to update:",
+                                choices:
+                                [
+                                    "Change first name",
+                                    "Change last name",
+                                    "Change password",
+                                    "Back"
+                                ]
+                            );
+                        Window.AddElement(settingsMenu);
+                        Window.ActivateElement(settingsMenu);
 
-                    // TODO: replace scrolling with field (think of errors)
+                        var settingsMenuResponse = settingsMenu.GetResponse();
 
-                    // TODO: Apply changes and reload card and display menu again
+                        switch (settingsMenuResponse!.Value)
+                        {
+                            case 0:
+                                Flow.UpdateCustomerFirstName(Navigation.UserEmail);
+                                card.UpdateLines(
+                                    Component.GetCustomerCard(Navigation.UserEmail).Lines
+                                );
+                                break;
 
+                            case 1:
+                                Flow.UpdateCustomerLastName(Navigation.UserEmail);
+                                card.UpdateLines(
+                                    Component.GetCustomerCard(Navigation.UserEmail).Lines
+                                );
+
+                                break;
+
+                            case 2:
+                                Flow.UpdateCustomerPassword(Navigation.UserEmail);
+                                card.UpdateLines(
+                                    Component.GetCustomerCard(Navigation.UserEmail).Lines
+                                );
+                                break;
+
+                            case 3:
+                                Window.RemoveElement(settingsMenu);
+                                updateLoop = false;
+                                break;
+                        }
+                    }
                     break;
 
                 case 3:
