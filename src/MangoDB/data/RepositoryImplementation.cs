@@ -439,6 +439,32 @@ public class RepositoryImplementation : IRepository
             cmd.CommandText = sb.ToString();
             cmd.ExecuteNonQuery();
 
+            foreach (var (recipe, quantity) in order)
+            {
+                cmd.CommandText =
+                    $"SELECT ingredient_name, quantity FROM recipe_ingredient WHERE recipe_name = '{recipe}'";
+                using var reader = cmd.ExecuteReader();
+
+                var ingredients = new List<(string name, int quantity)>();
+                while (reader.Read())
+                {
+                    var ingredientName = reader.GetString(0);
+                    var ingredientQuantity = reader.GetInt32(1);
+
+                    ingredients.Add((ingredientName, ingredientQuantity));
+                }
+                reader.Close();
+
+                foreach (var (ingredientName, ingredientQuantity) in ingredients)
+                {
+                    cmd.CommandText =
+                        $"UPDATE ingredient SET in_stock = in_stock - @q WHERE name = '@r'";
+                    cmd.Parameters.AddWithValue("q", ingredientQuantity * quantity);
+                    cmd.Parameters.AddWithValue("r", ingredientName);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
             transaction?.Commit();
 
             return true;
