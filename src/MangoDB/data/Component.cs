@@ -472,4 +472,44 @@ public class Component
         Window.DeactivateElement(suppliersViewer);
         Window.RemoveElement(suppliersViewer, exitDialog);
     }
+
+    public static InteractionEventArgs<string>? GetSupplierName(string? defaultValue = null)
+    {
+        Prompt supplierNamePrompt =
+            new("Please enter the supplier name:", defaultValue, maxInputLength: 30);
+        Window.AddElement(supplierNamePrompt);
+
+        Window.ActivateElement(supplierNamePrompt);
+        var resp = supplierNamePrompt.GetResponse();
+        Window.RemoveElement(supplierNamePrompt);
+
+        return resp;
+    }
+
+    public static InteractionEventArgs<string>? GetSupplierAddress(string? defaultValue = null)
+    {
+        Prompt supplierAddressPrompt =
+            new("Please enter the supplier address:", defaultValue, maxInputLength: 50);
+        Window.AddElement(supplierAddressPrompt);
+
+        Window.ActivateElement(supplierAddressPrompt);
+        var resp = supplierAddressPrompt.GetResponse();
+        Window.RemoveElement(supplierAddressPrompt);
+
+        return resp;
+    }
+
+    public static InteractionEventArgs<int>? GetSupplierPriceCategory()
+    {
+        string[] options = { "Low", "Medium", "High" };
+        ScrollingMenu priceCategorySelector =
+            new("Please select the price category:", choices: options);
+        Window.AddElement(priceCategorySelector);
+
+        Window.ActivateElement(priceCategorySelector);
+        var resp = priceCategorySelector.GetResponse();
+        Window.RemoveElement(priceCategorySelector);
+
+        return resp;
+    }
 }

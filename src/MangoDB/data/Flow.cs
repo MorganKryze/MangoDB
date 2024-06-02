@@ -1041,4 +1041,262 @@ public class Flow
             Window.RemoveElement(recipesTable, recipeDialog, recipeStepsTable);
         }
     }
+
+    public static void AddChef()
+    {
+        string emailField = "",
+            firstNameField = "",
+            lastNameField = "",
+            passwordField = "";
+        int working_hoursField = 0;
+        float salaryField = 0.0f;
+
+        Email:
+        var resp = Component.GetEmail(emailField);
+        if (resp!.Status is Status.Escaped)
+        {
+            return;
+        }
+        else
+        {
+            emailField = resp.Value;
+        }
+
+        FirstName:
+        resp = Component.GetFirstName(firstNameField);
+        if (resp!.Status is Status.Escaped)
+        {
+            goto Email;
+        }
+        else
+        {
+            firstNameField = resp.Value;
+        }
+
+        LastName:
+        resp = Component.GetLastName(lastNameField);
+        if (resp!.Status is Status.Escaped)
+        {
+            goto FirstName;
+        }
+        else
+        {
+            lastNameField = resp.Value;
+        }
+
+        Password:
+        resp = Component.GetPassword(passwordField);
+        if (resp!.Status is Status.Escaped)
+        {
+            goto LastName;
+        }
+        else
+        {
+            passwordField = Fn.Hash(resp.Value);
+        }
+
+        WorkingHours:
+        IntSelector workingHoursSelector =
+            new("Please enter the working hours of the chef:", min: 0, max: 16, start: 8, step: 1);
+        Window.AddElement(workingHoursSelector);
+
+        Window.ActivateElement(workingHoursSelector);
+        var workingHoursResp = workingHoursSelector.GetResponse();
+        if (workingHoursResp!.Status is not Status.Selected)
+        {
+            Window.RemoveElement(workingHoursSelector);
+            goto Password;
+        }
+        working_hoursField = workingHoursResp.Value;
+
+        FloatSelector salarySelector =
+            new(
+                "Please enter the salary of the chef:",
+                min: 1000.0f,
+                max: 10000.0f,
+                start: 2000.0f,
+                step: 100.0f
+            );
+        Window.AddElement(salarySelector);
+
+        Window.ActivateElement(salarySelector);
+        var salaryResp = salarySelector.GetResponse();
+
+        if (salaryResp!.Status is not Status.Selected)
+        {
+            Window.RemoveElement(salarySelector);
+            goto WorkingHours;
+        }
+        salaryField = salaryResp.Value;
+
+        try
+        {
+            RepositoryImplementation.AddChef(
+                emailField,
+                firstNameField,
+                lastNameField,
+                passwordField,
+                working_hoursField,
+                salaryField
+            );
+
+            Dialog successDialog =
+                new(
+                    ["Chef added", "The chef has been successfully added to the database."],
+                    rightOption: "OK"
+                );
+            Window.AddElement(successDialog);
+            Window.ActivateElement(successDialog);
+
+            Window.RemoveElement(successDialog);
+        }
+        catch (Exception e)
+        {
+            Dialog errorDialog;
+            if (e.Message.Substring(0, 5) == "23505")
+            {
+                errorDialog = new(
+                    [
+                        "Error",
+                        "The email you entered is already in use.",
+                        "Please try again with a different email."
+                    ],
+                    rightOption: "OK"
+                );
+            }
+            else
+            {
+                errorDialog = new(
+                    [
+                        "Error",
+                        "An error occurred when trying to create the chef.",
+                        "The operation will be cancelled."
+                    ],
+                    rightOption: "OK"
+                );
+            }
+            Window.AddElement(errorDialog);
+            Window.ActivateElement(errorDialog);
+
+            Window.RemoveElement(errorDialog);
+            return;
+        }
+    }
+
+    public static void AddSupplier()
+    {
+        string emailField = "",
+            nameField = "",
+            passwordField = "",
+            addressField = "",
+            priceCategoryField = "";
+
+        Email:
+        var resp = Component.GetEmail(emailField);
+        if (resp!.Status is Status.Escaped)
+        {
+            return;
+        }
+        else
+        {
+            emailField = resp.Value;
+        }
+
+        Name:
+        resp = Component.GetSupplierName(nameField);
+        if (resp!.Status is Status.Escaped)
+        {
+            goto Email;
+        }
+        else
+        {
+            nameField = resp.Value;
+        }
+
+        Password:
+        resp = Component.GetPassword(passwordField);
+
+        if (resp!.Status is Status.Escaped)
+        {
+            goto Name;
+        }
+        else
+        {
+            passwordField = Fn.Hash(resp.Value);
+        }
+
+        Address:
+        resp = Component.GetSupplierAddress(addressField);
+        if (resp!.Status is Status.Escaped)
+        {
+            goto Password;
+        }
+        else
+        {
+            addressField = resp.Value;
+        }
+
+        var resp2 = Component.GetSupplierPriceCategory();
+        if (resp!.Status is Status.Escaped)
+        {
+            goto Address;
+        }
+        else
+        {
+            string[] options = { "Low", "Medium", "High" };
+            priceCategoryField = options[resp2!.Value];
+        }
+
+        try
+        {
+            RepositoryImplementation.AddSupplier(
+                emailField,
+                nameField,
+                passwordField,
+                addressField,
+                priceCategoryField
+            );
+
+            Dialog successDialog =
+                new(
+                    ["Supplier added", "The supplier has been successfully added to the database."],
+                    rightOption: "OK"
+                );
+            Window.AddElement(successDialog);
+            Window.ActivateElement(successDialog);
+
+            Window.RemoveElement(successDialog);
+        }
+        catch (Exception e)
+        {
+            Dialog errorDialog;
+            if (e.Message.Substring(0, 5) == "23505")
+            {
+                errorDialog = new(
+                    [
+                        "Error",
+                        "The email you entered is already in use.",
+                        "Please try again with a different email."
+                    ],
+                    rightOption: "OK"
+                );
+            }
+            else
+            {
+                errorDialog = new(
+                    [
+                        "Error",
+                        "An error occurred when trying to create the supplier.",
+                        "The operation will be cancelled."
+                    ],
+                    rightOption: "OK"
+                );
+            }
+            Window.AddElement(errorDialog);
+            Window.ActivateElement(errorDialog);
+
+            Window.RemoveElement(errorDialog);
+            return;
+        }
+    }
 }

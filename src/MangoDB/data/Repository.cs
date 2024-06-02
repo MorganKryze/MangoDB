@@ -23,6 +23,18 @@ interface IRepository
         throw new NotImplementedException();
     }
 
+    public static void AddChef(
+        string email,
+        string first_name,
+        string last_name,
+        string password,
+        string working_hours,
+        float salary
+    )
+    {
+        throw new NotImplementedException();
+    }
+
     public static List<List<string>> GetSuppliers(int limit)
     {
         throw new NotImplementedException();

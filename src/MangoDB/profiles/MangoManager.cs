@@ -78,7 +78,7 @@ public class MangoManager
                     break;
 
                 case 3:
-
+                    Flow.AddChef();
                     break;
 
                 case 4:
@@ -86,7 +86,7 @@ public class MangoManager
                     break;
 
                 case 5:
-
+                    Flow.AddSupplier();
                     break;
 
                 case 6:

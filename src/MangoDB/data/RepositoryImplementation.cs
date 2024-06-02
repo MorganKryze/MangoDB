@@ -737,4 +737,52 @@ public class RepositoryImplementation : IRepository
         cmd.Parameters.AddWithValue("t", orderTimestamp);
         Core.WriteDebugMessage(lines: cmd.ExecuteNonQuery().ToString());
     }
+
+    public static void AddChef(
+        string email,
+        string first_name,
+        string last_name,
+        string password,
+        int working_hours,
+        float salary
+    )
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        var interval = TimeSpan.Parse(working_hours + ":00:00");
+
+        cmd.CommandText =
+            "INSERT INTO mango_chef (email, manager_email, first_name, last_name, password, working_hours, salary) VALUES (@e, 'admin', @f, @l, @p, CAST(@w AS TIME), @s)";
+        cmd.Parameters.AddWithValue("e", email);
+        cmd.Parameters.AddWithValue("f", first_name);
+        cmd.Parameters.AddWithValue("l", last_name);
+        cmd.Parameters.AddWithValue("p", password);
+        cmd.Parameters.AddWithValue("w", interval);
+        cmd.Parameters.AddWithValue("s", salary);
+
+        cmd.ExecuteNonQuery();
+    }
+
+    public static void AddSupplier(
+        string email,
+        string name,
+        string password,
+        string address,
+        string price_category
+    )
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "INSERT INTO supplier_company (email, manager_email, name, password, address, price_category) VALUES (@e, 'admin', @n, @pa, @a, CAST(@pr AS price_category))";
+        cmd.Parameters.AddWithValue("e", email);
+        cmd.Parameters.AddWithValue("n", name);
+        cmd.Parameters.AddWithValue("pa", password);
+        cmd.Parameters.AddWithValue("a", address);
+        cmd.Parameters.AddWithValue("pr", price_category);
+
+        cmd.ExecuteNonQuery();
+    }
 }
