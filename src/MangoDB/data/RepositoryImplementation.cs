@@ -735,7 +735,7 @@ public class RepositoryImplementation : IRepository
             "UPDATE \"order\" SET status = CAST(@s AS \"order_status\") WHERE time = CAST(@t AS TIMESTAMP)";
         cmd.Parameters.AddWithValue("s", newStatus);
         cmd.Parameters.AddWithValue("t", orderTimestamp);
-        cmd.ExecuteNonQuery()
+        cmd.ExecuteNonQuery();
     }
 
     public static void AddChef(
