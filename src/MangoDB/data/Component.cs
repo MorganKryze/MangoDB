@@ -381,7 +381,7 @@ public class Component
             ],
             placement: Placement.TopRight
         );
-    } 
+    }
 
     public static void SeeAllTools()
     {
@@ -403,5 +403,73 @@ public class Component
 
         Window.DeactivateElement(toolsViewer);
         Window.RemoveElement(toolsViewer, exitDialog);
+    }
+
+    public static void ViewChefs()
+    {
+        IntSelector chefSelector = new("Please select a chef:", 1, 10, 5, 1);
+        Window.AddElement(chefSelector);
+
+        Window.ActivateElement(chefSelector);
+        var resp = chefSelector.GetResponse();
+        Window.RemoveElement(chefSelector);
+
+        if (resp!.Status is Status.Escaped)
+        {
+            return;
+        }
+
+        var chefs = RepositoryImplementation.GetChefs(resp.Value);
+        List<string> headers = ["Email", "First name", "Last name", "Working hours", "Salary"];
+        List<List<string>> options = [];
+        foreach (var chef in chefs)
+        {
+            options.Add([chef[0], chef[1], chef[2], chef[3], chef[4]]);
+        }
+
+        TableView chefsViewer = new("Chefs list:", headers, options);
+        Window.AddElement(chefsViewer);
+        Window.Render(chefsViewer);
+
+        Dialog exitDialog = new(["Press enter to exit"]);
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+
+        Window.DeactivateElement(chefsViewer);
+        Window.RemoveElement(chefsViewer, exitDialog);
+    }
+
+    public static void ViewSuppliers()
+    {
+        IntSelector supplierSelector = new("Please select a supplier:", 1, 10, 5, 1);
+        Window.AddElement(supplierSelector);
+
+        Window.ActivateElement(supplierSelector);
+        var resp = supplierSelector.GetResponse();
+        Window.RemoveElement(supplierSelector);
+
+        if (resp!.Status is Status.Escaped)
+        {
+            return;
+        }
+
+        var suppliers = RepositoryImplementation.GetSuppliers(resp.Value);
+        List<string> headers = ["Email", "Company name", "Address", "Price category"];
+        List<List<string>> options = [];
+        foreach (var supplier in suppliers)
+        {
+            options.Add([supplier[0], supplier[1], supplier[2], supplier[3]]);
+        }
+
+        TableView suppliersViewer = new("Suppliers list:", headers, options);
+        Window.AddElement(suppliersViewer);
+        Window.Render(suppliersViewer);
+
+        Dialog exitDialog = new(["Press enter to exit"]);
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+
+        Window.DeactivateElement(suppliersViewer);
+        Window.RemoveElement(suppliersViewer, exitDialog);
     }
 }

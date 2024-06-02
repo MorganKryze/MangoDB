@@ -18,6 +18,16 @@ interface IRepository
         throw new NotImplementedException();
     }
 
+    public static List<List<string>> GetChefs(int limit)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<List<string>> GetSuppliers(int limit)
+    {
+        throw new NotImplementedException();
+    }
+
     public static List<string> GetCustomerInfo(string email)
     {
         throw new NotImplementedException();

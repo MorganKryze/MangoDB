@@ -87,6 +87,54 @@ public class RepositoryImplementation : IRepository
         return customers;
     }
 
+    public static List<List<string>> GetChefs(int limit)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT email, first_name, last_name, working_hours, salary FROM mango_chef LIMIT @l";
+        cmd.Parameters.AddWithValue("l", limit);
+
+        using var reader = cmd.ExecuteReader();
+        List<List<string>> chefs = [];
+        while (reader.Read())
+        {
+            List<string> chef = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string value = reader[i]?.ToString() ?? string.Empty;
+                chef.Add(value);
+            }
+            chefs.Add(chef);
+        }
+        return chefs;
+    }
+
+    public static List<List<string>> GetSuppliers(int limit)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT email, name, address, price_category FROM supplier_company LIMIT @l";
+        cmd.Parameters.AddWithValue("l", limit);
+
+        using var reader = cmd.ExecuteReader();
+        List<List<string>> suppliers = [];
+        while (reader.Read())
+        {
+            List<string> supplier = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string value = reader[i]?.ToString() ?? string.Empty;
+                supplier.Add(value);
+            }
+            suppliers.Add(supplier);
+        }
+        return suppliers;
+    }
+
     public static List<string> GetCustomerInfo(string email)
     {
         using var cmd = new NpgsqlCommand();
@@ -413,7 +461,6 @@ public class RepositoryImplementation : IRepository
                 "yyyy-MM-dd HH:mm:ss",
                 CultureInfo.InvariantCulture
             );
-
 
             cmd.CommandText =
                 "INSERT INTO \"order\" (time, customer_email, mango_chef_email, price, status) VALUES (CAST(@t AS TIMESTAMP), @e, @chef, @p, CAST('Pending' AS order_status))";

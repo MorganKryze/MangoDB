@@ -7,7 +7,20 @@ public class MangoManager
         ScrollingMenu homeMenu =
             new(
                 "Please choose an action:",
-                choices: ["View customers", "Create a new customer", "Hash text", "Log out"]
+                choices:
+                [
+                    "View customers",
+                    "Add a customer",
+                    "View chefs",
+                    "Add a chef",
+                    "View suppliers",
+                    "Add a supplier",
+                    "See Ingredients",
+                    "See Tools",
+                    "See recipes",
+                    "Hash text",
+                    "Log out"
+                ]
             );
         Window.AddElement(homeMenu);
 
@@ -61,6 +74,34 @@ public class MangoManager
                     break;
 
                 case 2:
+                    Component.ViewChefs();
+                    break;
+
+                case 3:
+
+                    break;
+
+                case 4:
+                    Component.ViewSuppliers();
+                    break;
+
+                case 5:
+
+                    break;
+
+                case 6:
+                    Component.SeeAllIngredients();
+                    break;
+
+                case 7:
+                    Component.SeeAllTools();
+                    break;
+
+                case 8:
+                    Flow.SeeRecipes();
+                    break;
+
+                case 9:
                     bool hashTranslation = Flow.ShowHashed();
                     if (!hashTranslation)
                     {
@@ -81,7 +122,7 @@ public class MangoManager
                     }
                     break;
 
-                case 3:
+                case 10:
                     Navigation.LogOut();
                     return;
             }

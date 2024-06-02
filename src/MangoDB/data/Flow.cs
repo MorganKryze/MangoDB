@@ -339,7 +339,7 @@ public class Flow
         Window.AddElement(cartTable);
         Window.Render(cartTable);
 
-        string[] options = ["Add another recipe", "Clear cart", "Confirm order", "Cancel"];
+        string[] options = ["Add another recipe", "Confirm order", "Clear cart", "Cancel"];
         ScrollingMenu menu = new("Please choose an option:", choices: options);
         Window.AddElement(menu);
         Window.ActivateElement(menu);
@@ -365,11 +365,8 @@ public class Flow
         {
             case 0:
                 goto SelectRecipe;
-            case 1:
-                cart.Clear();
-                goto Menu;
 
-            case 2:
+            case 1:
                 bool validation = RepositoryImplementation.ConfirmOrder(
                     cart,
                     Component.GetTotalPrice(cart, recipes),
@@ -420,6 +417,10 @@ public class Flow
                     Window.RemoveElement(orderFailed);
                 }
                 break;
+
+            case 2:
+                cart.Clear();
+                goto Menu;
 
             case 3:
                 return;
