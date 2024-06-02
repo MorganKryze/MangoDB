@@ -285,4 +285,52 @@ public class Component
 
         return MathF.Round(totalPrice, 1);
     }
+
+    public static EmbedText GetSupplierCard(string email)
+    {
+        var info = RepositoryImplementation.GetSupplierInfo(email);
+        return new EmbedText(
+            [
+                "Personal information:      ",
+                "--------------------",
+                "",
+                $"Company name: {info[0]}",
+                $"Address: {info[1]}",
+                "",
+                $"Price category: {info[2]}"
+            ],
+            placement: Placement.TopRight
+        );
+    }
+
+    public static void SeeIngredients(string email)
+    {
+        var ingredients = RepositoryImplementation.GetIngredients(email);
+        List<string> headers = ["Name", "Price", "Calories", "Stock", "Allergen", "Origin"];
+        List<List<string>> options = [];
+        foreach (var ingredient in ingredients)
+        {
+            options.Add(
+                [
+                    ingredient.Name,
+                    ingredient.Price.ToString(),
+                    ingredient.Calories.ToString(),
+                    ingredient.Stock.ToString(),
+                    ingredient.Allergen,
+                    ingredient.Origin
+                ]
+            );
+        }
+
+        TableView ingredientsViewer = new("Ingredients list:", headers, options);
+        Window.AddElement(ingredientsViewer);
+        Window.Render(ingredientsViewer);
+
+        Dialog exitDialog = new(["Press enter to exit"]);
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+
+        Window.DeactivateElement(ingredientsViewer);
+        Window.RemoveElement(ingredientsViewer, exitDialog);
+    }
 }

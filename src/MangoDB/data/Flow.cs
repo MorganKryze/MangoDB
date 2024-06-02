@@ -125,7 +125,7 @@ public class Flow
             "mango_manager" => Profile.MangoManager,
             "mango_chef" => Profile.MangoChef,
             "customer" => Profile.Customer,
-            "supplier" => Profile.Supplier,
+            "supplier_company" => Profile.Supplier,
             _ => Profile.None
         };
         Navigation.LogIn(userProfile, idValue);
@@ -604,5 +604,261 @@ public class Flow
 
         Window.DeactivateElement(ordersTable);
         Window.RemoveElement(ordersTable, ordersDialog);
+    }
+
+    public static void AddIngredient(string email)
+    {
+        var name = "";
+        Name:
+
+        Prompt namePrompt =
+            new("Please enter the name of the ingredient:", maxInputLength: 30, defaultValue: name);
+        Window.AddElement(namePrompt);
+        Window.ActivateElement(namePrompt);
+
+        var nameResp = namePrompt.GetResponse();
+        if (nameResp!.Status is not Status.Selected)
+        {
+            return;
+        }
+        else if (nameResp.Value == string.Empty)
+        {
+            Dialog emptyNameDialog =
+                new(["Error", "The name of the ingredient cannot be empty."], rightOption: "OK");
+            Window.AddElement(emptyNameDialog);
+            Window.ActivateElement(emptyNameDialog);
+
+            Window.RemoveElement(emptyNameDialog);
+            goto Name;
+        }
+        name = nameResp.Value;
+
+        var price = 1.0f;
+        Price:
+
+        FloatSelector priceSelector =
+            new(
+                "Please enter the price of the ingredient:",
+                min: 0.1f,
+                max: 10f,
+                start: price,
+                step: 0.1f
+            );
+        Window.AddElement(priceSelector);
+        Window.ActivateElement(priceSelector);
+
+        var priceResp = priceSelector.GetResponse();
+        if (priceResp!.Status is not Status.Selected)
+        {
+            goto Name;
+        }
+        price = MathF.Round(priceResp.Value, 1);
+
+        var calories = 100;
+        Calories:
+
+        IntSelector caloriesSelector =
+            new(
+                "Please enter the calories of the ingredient:",
+                min: 0,
+                max: 1000,
+                start: calories,
+                step: 10
+            );
+        Window.AddElement(caloriesSelector);
+        Window.ActivateElement(caloriesSelector);
+
+        var caloriesResp = caloriesSelector.GetResponse();
+        if (caloriesResp!.Status is not Status.Selected)
+        {
+            goto Price;
+        }
+        calories = caloriesResp.Value;
+
+        var quantity = 10;
+        Quantity:
+
+        IntSelector quantitySelector =
+            new(
+                "Please enter the quantity of the ingredient:",
+                min: 1,
+                max: 100,
+                start: quantity,
+                step: 1
+            );
+        Window.AddElement(quantitySelector);
+        Window.ActivateElement(quantitySelector);
+
+        var quantityResp = quantitySelector.GetResponse();
+        if (quantityResp!.Status is not Status.Selected)
+        {
+            goto Calories;
+        }
+        quantity = quantityResp.Value;
+
+        var allergen = "";
+        Allergen:
+
+        Prompt allergenPrompt =
+            new(
+                "Please enter the allergen of the ingredient:",
+                maxInputLength: 30,
+                defaultValue: allergen
+            );
+        Window.AddElement(allergenPrompt);
+        Window.ActivateElement(allergenPrompt);
+
+        var allergenResp = allergenPrompt.GetResponse();
+        if (allergenResp!.Status is not Status.Selected)
+        {
+            goto Quantity;
+        }
+        else if (allergenResp.Value == string.Empty)
+        {
+            allergen = "None";
+        }
+        else
+        {
+            allergen = allergenResp.Value;
+        }
+
+        var country = "";
+        Country:
+
+        Prompt countryPrompt =
+            new(
+                "Please enter the country of the ingredient:",
+                maxInputLength: 30,
+                defaultValue: country
+            );
+        Window.AddElement(countryPrompt);
+        Window.ActivateElement(countryPrompt);
+
+        var countryResp = countryPrompt.GetResponse();
+        if (countryResp!.Status is not Status.Selected)
+        {
+            goto Allergen;
+        }
+        else if (countryResp.Value == string.Empty)
+        {
+            Dialog emptyCountryDialog =
+                new(["Error", "The country of the ingredient cannot be empty."], rightOption: "OK");
+            Window.AddElement(emptyCountryDialog);
+            Window.ActivateElement(emptyCountryDialog);
+
+            Window.RemoveElement(emptyCountryDialog);
+            goto Country;
+        }
+        country = countryResp.Value;
+
+        Ingredient newIngredient = new(name, price, calories, quantity, allergen, country);
+
+        if (!RepositoryImplementation.AddIngredient(newIngredient, email))
+        {
+            Dialog errorDialog;
+
+            errorDialog = new(
+                [
+                    "Error",
+                    "An error occurred when trying to add the ingredient.",
+                    "The operation will be cancelled."
+                ],
+                rightOption: "OK"
+            );
+
+            Window.AddElement(errorDialog);
+            Window.ActivateElement(errorDialog);
+
+            Window.RemoveElement(errorDialog);
+        }
+    }
+
+    public static void UpdateIngredientPrices(string email)
+    {
+        var ingredients = RepositoryImplementation.GetIngredients(email);
+        if (ingredients.Count == 0)
+        {
+            Dialog noIngredientsDialog =
+                new(
+                    [
+                        "No ingredients",
+                        "You have no ingredients to update the prices for.",
+                        "Please add some ingredients first."
+                    ],
+                    rightOption: "OK"
+                );
+            Window.AddElement(noIngredientsDialog);
+            Window.ActivateElement(noIngredientsDialog);
+
+            Window.RemoveElement(noIngredientsDialog);
+            return;
+        }
+
+        var ingredientNames = ingredients.Select(x => x.Name).ToList();
+        var ingredientPrices = ingredients.Select(x => x.Price).ToList();
+
+        TableView ingredientsTable =
+            new(
+                title: "Ingredients",
+                headers: ["Name", "Price"],
+                lines: ingredientNames
+                    .Zip(
+                        ingredientPrices,
+                        (name, price) => new List<string>() { name, price.ToString() }
+                    )
+                    .ToList()
+            );
+        Window.AddElement(ingredientsTable);
+        Window.Render(ingredientsTable);
+
+        var ingredientIndex = 0;
+        float price = 0f;
+
+        Price:
+        
+        price = ingredientPrices[ingredientIndex];
+
+        FloatSelector priceSelector =
+            new(
+                "Please enter the new price for the ingredient:",
+                min: 0.1f,
+                max: 10f,
+                start: price,
+                step: 0.1f
+            );
+        Window.AddElement(priceSelector);
+        Window.ActivateElement(priceSelector);
+
+        var priceResp = priceSelector.GetResponse();
+        if (priceResp!.Status is not Status.Selected)
+        {
+            Window.RemoveElement(ingredientsTable);
+            return;
+        }
+        price = MathF.Round(priceResp.Value, 1);
+
+        RepositoryImplementation.UpdateIngredientPrice(
+            email,
+            ingredientNames[ingredientIndex],
+            price
+        );
+
+        Dialog priceUpdatedDialog =
+            new(
+                ["Price updated", "The price for the ingredient has been successfully updated."],
+                rightOption: "OK"
+            );
+        Window.AddElement(priceUpdatedDialog);
+        Window.ActivateElement(priceUpdatedDialog);
+
+        Window.RemoveElement(priceUpdatedDialog);
+        Window.RemoveElement(priceSelector);
+        ingredientIndex++;
+        if (ingredientIndex < ingredients.Count)
+        {
+            goto Price;
+        }
+        Window.DeactivateElement(ingredientsTable);
+        Window.RemoveElement(ingredientsTable);
     }
 }

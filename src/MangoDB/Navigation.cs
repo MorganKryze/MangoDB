@@ -2,8 +2,11 @@ namespace MangoDB;
 
 public static class Navigation
 {
-    public static Profile UserProfile = Profile.None;
-    public static string UserEmail = "";
+    private static Profile userProfile = Profile.None;
+    private static string userEmail = "";
+
+    public static Profile UserProfile { get => userProfile; set => userProfile = value; }
+    public static string UserEmail { get => userEmail; set => userEmail = value; }
 
     public static void Setup()
     {
@@ -46,9 +49,7 @@ public static class Navigation
                 Customer.HomePage();
                 break;
             case Profile.Supplier:
-                // TODO: Add Supplier method
-                Core.WriteDebugMessage(lines: "Supplier method not implemented yet.");
-                Window.Freeze();
+                Supplier.HomePage();
                 break;
             default:
                 return;

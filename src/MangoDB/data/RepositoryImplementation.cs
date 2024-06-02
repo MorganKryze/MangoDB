@@ -476,4 +476,98 @@ public class RepositoryImplementation : IRepository
             return false;
         }
     }
+
+    public static List<string> GetSupplierInfo(string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT name, address, price_category FROM supplier_company WHERE email = @e";
+        cmd.Parameters.AddWithValue("e", email);
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read();
+        List<string> customer = [];
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            string value = reader[i]?.ToString() ?? string.Empty;
+            customer.Add(value);
+        }
+        return customer;
+    }
+
+    public static List<Ingredient> GetIngredients(string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT name, price, calories, in_stock, allergen, country FROM ingredient WHERE supplier_email = @e";
+        cmd.Parameters.AddWithValue("e", email);
+
+        using var reader = cmd.ExecuteReader();
+        List<Ingredient> ingredients = [];
+        while (reader.Read())
+        {
+            string name = reader.GetString(0);
+            float price = reader.GetFloat(1);
+            int calories = reader.GetInt32(2);
+            int stock = reader.GetInt32(3);
+            string allergen = reader.GetString(4);
+            string origin = reader.GetString(5);
+
+            Ingredient ingredient = new(name, price, calories, stock, allergen, origin);
+            ingredients.Add(ingredient);
+        }
+        return ingredients;
+    }
+
+    public static bool AddIngredient(Ingredient ingredient, string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "INSERT INTO ingredient (name, price, calories, in_stock, allergen, country, supplier_email) VALUES (@n, @p, @c, @s, @a, @o, @e)";
+        cmd.Parameters.AddWithValue("n", ingredient.Name);
+        cmd.Parameters.AddWithValue("p", ingredient.Price);
+        cmd.Parameters.AddWithValue("c", ingredient.Calories);
+        cmd.Parameters.AddWithValue("s", ingredient.Stock);
+        cmd.Parameters.AddWithValue("a", ingredient.Allergen);
+        cmd.Parameters.AddWithValue("o", ingredient.Origin);
+        cmd.Parameters.AddWithValue("e", email);
+
+        try
+        {
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool UpdateIngredientPrice(string email, string ingredient_name, float price)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "UPDATE ingredient SET price = @p WHERE supplier_email = @e AND name = @n";
+        cmd.Parameters.AddWithValue("p", MathF.Round(price, 1));
+        cmd.Parameters.AddWithValue("e", email);
+        cmd.Parameters.AddWithValue("n", ingredient_name);
+
+        try
+        {
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

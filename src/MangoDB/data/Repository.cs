@@ -87,4 +87,24 @@ interface IRepository
     {
         throw new NotImplementedException();
     }
+
+    public static List<string> GetSupplierInfo(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<Ingredient> GetIngredients(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static bool AddIngredient(Ingredient ingredient, string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static bool UpdateIngredientPrice(string email, string ingredient_name, float price)
+    {
+        throw new NotImplementedException();
+    }
 }

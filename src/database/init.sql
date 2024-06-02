@@ -634,7 +634,7 @@ VALUES (
         0.5,
         100,
         50,
-        'None',
+        'Nuts',
         'Spain'
     ),
     (
