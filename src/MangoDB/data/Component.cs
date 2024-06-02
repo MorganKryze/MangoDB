@@ -283,6 +283,6 @@ public class Component
             }
         }
 
-        return totalPrice;
+        return MathF.Round(totalPrice, 1);
     }
 }

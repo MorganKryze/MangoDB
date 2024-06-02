@@ -370,6 +370,12 @@ public class Flow
                     RepositoryImplementation.GetRandomChefEmail()
                 );
 
+                FakeLoadingBar loadingBar = new("[ Placing order... ]");
+                Window.AddElement(loadingBar);
+                Window.ActivateElement(loadingBar);
+
+                Window.RemoveElement(loadingBar);
+
                 if (validation)
                 {
                     Dialog orderConfirmation =
@@ -378,6 +384,9 @@ public class Flow
                                 "Order confirmation",
                                 "",
                                 "Your order has been successfully placed.",
+                                $"The total price is {Component.GetTotalPrice(cart, recipes)}.",
+                                "",
+                                "Thank you for your order!",
                                 "You will receive an email with the details."
                             ],
                             rightOption: "OK"

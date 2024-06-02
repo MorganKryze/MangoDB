@@ -379,7 +379,7 @@ public class RepositoryImplementation : IRepository
                 "INSERT INTO \"order\" (time, customer_email, mango_chef_email, price, status) VALUES (@t, @e, @chef, @p, CAST('Pending' AS order_status))";
             cmd.Parameters.AddWithValue("e", Navigation.UserEmail);
             cmd.Parameters.AddWithValue("chef", email);
-            cmd.Parameters.AddWithValue("p", Math.Round(price, 1));
+            cmd.Parameters.AddWithValue("p", price);
             cmd.Parameters.AddWithValue("t", orderTime);
             cmd.ExecuteNonQuery();
 
@@ -409,9 +409,8 @@ public class RepositoryImplementation : IRepository
 
             return true;
         }
-        catch (Exception e)
+        catch
         {
-            Core.WriteDebugMessage(lines: e.Message);
             transaction?.Rollback();
 
             return false;
