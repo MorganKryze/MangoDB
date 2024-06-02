@@ -379,14 +379,22 @@ public class RepositoryImplementation : IRepository
                 cmd.CommandText =
                     $"SELECT ingredient_name, quantity FROM recipe_ingredient WHERE recipe_name = '{recipe}'";
                 using var reader = cmd.ExecuteReader();
+
+                var ingredients = new List<(string name, int quantity)>();
                 while (reader.Read())
                 {
                     var ingredientName = reader.GetString(0);
                     var ingredientQuantity = reader.GetInt32(1);
 
+                    ingredients.Add((ingredientName, ingredientQuantity));
+                }
+                reader.Close();
+
+                foreach (var (ingredientName, ingredientQuantity) in ingredients)
+                {
                     cmd.CommandText =
                         $"SELECT in_stock FROM ingredient WHERE name = '{ingredientName}'";
-                    var stock = (int)cmd.ExecuteScalar()!;
+                    var stock = (int)(cmd.ExecuteScalar() ?? 0);
 
                     if (stock < ingredientQuantity * quantity)
                     {

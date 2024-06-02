@@ -315,6 +315,10 @@ public class Flow
         if (cart.ContainsKey(recipes[recipeSelected.Value].Name))
         {
             cart[recipes[recipeSelected.Value].Name] += quantityResp.Value;
+            cart[recipes[recipeSelected.Value].Name] =
+                cart[recipes[recipeSelected.Value].Name] > 10
+                    ? 10
+                    : cart[recipes[recipeSelected.Value].Name];
         }
         else
         {
