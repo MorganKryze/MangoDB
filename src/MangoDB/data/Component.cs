@@ -333,4 +333,75 @@ public class Component
         Window.DeactivateElement(ingredientsViewer);
         Window.RemoveElement(ingredientsViewer, exitDialog);
     }
+
+    public static void SeeAllIngredients()
+    {
+        var ingredients = RepositoryImplementation.GetAllIngredients();
+        List<string> headers = ["Name", "Price", "Calories", "Stock", "Allergen", "Origin"];
+        List<List<string>> options = [];
+        foreach (var ingredient in ingredients)
+        {
+            options.Add(
+                [
+                    ingredient.Name,
+                    ingredient.Price.ToString(),
+                    ingredient.Calories.ToString(),
+                    ingredient.Stock.ToString(),
+                    ingredient.Allergen,
+                    ingredient.Origin
+                ]
+            );
+        }
+
+        TableView ingredientsViewer = new("Ingredients list:", headers, options);
+        Window.AddElement(ingredientsViewer);
+        Window.Render(ingredientsViewer);
+
+        Dialog exitDialog = new(["Press enter to exit"]);
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+
+        Window.DeactivateElement(ingredientsViewer);
+        Window.RemoveElement(ingredientsViewer, exitDialog);
+    }
+
+    public static EmbedText GetMangoChefCard(string email)
+    {
+        var info = RepositoryImplementation.GetMangoChefInfo(email);
+        return new EmbedText(
+            [
+                "Personal information:      ",
+                "--------------------",
+                "",
+                $"First name: {info[0]}",
+                $"Last name: {info[1]}",
+                "",
+                $"Salary: {info[2]}",
+                $"Working hours: {info[3]}"
+            ],
+            placement: Placement.TopRight
+        );
+    } 
+
+    public static void SeeAllTools()
+    {
+        var tools = RepositoryImplementation.GetAllTools();
+        List<string> headers = ["Name", "Price", "Stock"];
+        List<List<string>> options = [];
+        foreach (var tool in tools)
+        {
+            options.Add([tool.Name, tool.Price.ToString(), tool.Stock.ToString()]);
+        }
+
+        TableView toolsViewer = new("Tools list:", headers, options);
+        Window.AddElement(toolsViewer);
+        Window.Render(toolsViewer);
+
+        Dialog exitDialog = new(["Press enter to exit"]);
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+
+        Window.DeactivateElement(toolsViewer);
+        Window.RemoveElement(toolsViewer, exitDialog);
+    }
 }

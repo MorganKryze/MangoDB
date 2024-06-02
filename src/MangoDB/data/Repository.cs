@@ -107,4 +107,29 @@ interface IRepository
     {
         throw new NotImplementedException();
     }
+
+    public static List<Ingredient> GetAllIngredients()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<string> GetMangoChefInfo(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<Tool> GetAllTools()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<List<string>> GetChefOrders(string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static void UpdateOrderStatus(string email, string order_time, string newStatus)
+    {
+        throw new NotImplementedException();
+    }
 }

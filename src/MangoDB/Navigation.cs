@@ -41,9 +41,7 @@ public static class Navigation
                 MangoManager.HomePage();
                 break;
             case Profile.MangoChef:
-                // TODO: Add MangoChef method
-                Core.WriteDebugMessage(lines: "MangoChef method not implemented yet.");
-                Window.Freeze();
+                MangoChef.HomePage();
                 break;
             case Profile.Customer:
                 Customer.HomePage();

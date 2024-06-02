@@ -1,3 +1,5 @@
+using System.ComponentModel.Design;
+
 namespace MangoDB;
 
 public class Flow
@@ -94,7 +96,7 @@ public class Flow
         {
             Window.ActivateElement(password);
             var passwordResponse = password.GetResponse();
-            string hashedPassword = Tool.Hash(passwordResponse!.Value);
+            string hashedPassword = Fn.Hash(passwordResponse!.Value);
             if (!RepositoryImplementation.CheckPassword(idValue, hashedPassword, table))
             {
                 if (counter == 2)
@@ -186,7 +188,7 @@ public class Flow
         }
         else
         {
-            passwordField = Tool.Hash(resp.Value);
+            passwordField = Fn.Hash(resp.Value);
         }
 
         try
@@ -436,7 +438,7 @@ public class Flow
             Window.RemoveElement(askText);
             return false;
         }
-        string hashed = Tool.Hash(textResponse!.Value);
+        string hashed = Fn.Hash(textResponse!.Value);
         Dialog showHashed =
             new(["Hashed Text", hashed, "The hashed text is shown above."], rightOption: "OK");
         Window.AddElement(showHashed);
@@ -557,7 +559,7 @@ public class Flow
                 && resp.Value.Length >= 8
             )
             {
-                RepositoryImplementation.UpdateCustomer(email, "password", Tool.Hash(resp.Value));
+                RepositoryImplementation.UpdateCustomer(email, "password", Fn.Hash(resp.Value));
                 return;
             }
             else if (resp!.Status is Status.Escaped)
@@ -815,7 +817,7 @@ public class Flow
         float price = 0f;
 
         Price:
-        
+
         price = ingredientPrices[ingredientIndex];
 
         FloatSelector priceSelector =
@@ -860,5 +862,182 @@ public class Flow
         }
         Window.DeactivateElement(ingredientsTable);
         Window.RemoveElement(ingredientsTable);
+    }
+
+    public static void UpdateOrderStatus(string email)
+    {
+        Selection:
+
+        List<string> headers = ["Order time", "Price", "Status"];
+        List<List<string>> orders = RepositoryImplementation.GetChefOrders(email);
+        TableSelector orderSelector = new("Please select an order to update:", headers, orders);
+        Window.AddElement(orderSelector);
+        Window.ActivateElement(orderSelector);
+
+        var orderResp = orderSelector.GetResponse();
+        if (orderResp!.Status is not Status.Selected)
+        {
+            Window.RemoveElement(orderSelector);
+            return;
+        }
+
+        if (orders[orderResp.Value][2] == "Pending")
+        {
+            Dialog updateDialog =
+                new(
+                    [
+                        "Update order status",
+                        "",
+                        "Please select the new status for the order.",
+                        "The order is currently pending."
+                    ],
+                    "Cancel",
+                    "In progress"
+                );
+            Window.AddElement(updateDialog);
+            Window.ActivateElement(updateDialog);
+
+            var updateResp = updateDialog.GetResponse();
+            if (updateResp!.Status is not Status.Selected)
+            {
+                Window.RemoveElement(updateDialog);
+            }
+            else
+            {
+                RepositoryImplementation.UpdateOrderStatus(
+                    orders[orderResp.Value][0],
+                    "In Progress"
+                );
+
+                Dialog orderUpdatedDialog =
+                    new(
+                        [
+                            "Order updated",
+                            "The status for the order has been successfully updated."
+                        ],
+                        rightOption: "OK"
+                    );
+                Window.AddElement(orderUpdatedDialog);
+                Window.ActivateElement(orderUpdatedDialog);
+
+                Window.RemoveElement(orderUpdatedDialog);
+            }
+        }
+        else if (orders[orderResp.Value][2] == "In Progress")
+        {
+            Dialog updateDialog =
+                new(
+                    [
+                        "Update order status",
+                        "",
+                        "Please select the new status for the order.",
+                        "The order is currently in progress."
+                    ],
+                    "Cancel",
+                    "Complete"
+                );
+            Window.AddElement(updateDialog);
+            Window.ActivateElement(updateDialog);
+
+            var updateResp = updateDialog.GetResponse();
+            if (updateResp!.Status is not Status.Selected)
+            {
+                Window.RemoveElement(updateDialog);
+            }
+            else
+            {
+                RepositoryImplementation.UpdateOrderStatus(orders[orderResp.Value][0], "Completed");
+
+                Dialog orderUpdatedDialog =
+                    new(
+                        [
+                            "Order updated",
+                            "The status for the order has been successfully updated."
+                        ],
+                        rightOption: "OK"
+                    );
+                Window.AddElement(orderUpdatedDialog);
+                Window.ActivateElement(orderUpdatedDialog);
+
+                Window.RemoveElement(orderUpdatedDialog);
+            }
+        }
+
+        goto Selection;
+    }
+
+    public static void SeeRecipes()
+    {
+        var recipes = Component.GetRecipes();
+        if (recipes.Count == 0)
+        {
+            Dialog noRecipesDialog =
+                new(
+                    [
+                        "No recipes",
+                        "There are no recipes in the database.",
+                        "Please add some recipes first."
+                    ],
+                    rightOption: "OK"
+                );
+            Window.AddElement(noRecipesDialog);
+            Window.ActivateElement(noRecipesDialog);
+
+            Window.RemoveElement(noRecipesDialog);
+            return;
+        }
+
+        while (true)
+        {
+            TableSelector recipesTable =
+                new(
+                    title: "Recipes",
+                    headers: ["Name", "Price", "Calories"],
+                    lines: recipes
+                        .Select(x => new List<string>()
+                        {
+                            x.Name,
+                            x.Price.ToString(),
+                            x.Calories.ToString()
+                        })
+                        .ToList()
+                );
+            Window.AddElement(recipesTable);
+            Window.ActivateElement(recipesTable);
+
+            var recipeResp = recipesTable.GetResponse();
+            if (recipeResp!.Status is not Status.Selected)
+            {
+                Window.RemoveElement(recipesTable);
+                return;
+            }
+
+            TableView recipeStepsTable =
+                new(
+                    title: "Recipe steps",
+                    headers: ["Step", "Description"],
+                    lines: recipes[recipeResp!.Value]
+                        .Steps.Select((x, i) => new List<string>() { (i + 1).ToString(), x })
+                        .ToList()
+                );
+            Window.AddElement(recipeStepsTable);
+            Window.Render(recipeStepsTable);
+
+            Dialog recipeDialog =
+                new(
+                    [
+                        "Recipe details",
+                        "",
+                        $"The recipe for {recipes[recipeResp.Value].Name} is shown above.",
+                        "Press enter to continue."
+                    ]
+                );
+            Window.AddElement(recipeDialog);
+            Window.ActivateElement(recipeDialog);
+
+            Window.DeactivateElement(recipeStepsTable);
+
+            Window.RemoveElement(recipesTable, recipeDialog, recipeStepsTable);
+        }
     }
 }

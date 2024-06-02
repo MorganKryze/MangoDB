@@ -407,10 +407,16 @@ public class RepositoryImplementation : IRepository
                 throw new OutOfStockException();
             }
 
-            var orderTime = DateTime.Now;
+            var orderTimeString = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var orderTime = DateTime.ParseExact(
+                orderTimeString,
+                "yyyy-MM-dd HH:mm:ss",
+                CultureInfo.InvariantCulture
+            );
+
 
             cmd.CommandText =
-                "INSERT INTO \"order\" (time, customer_email, mango_chef_email, price, status) VALUES (@t, @e, @chef, @p, CAST('Pending' AS order_status))";
+                "INSERT INTO \"order\" (time, customer_email, mango_chef_email, price, status) VALUES (CAST(@t AS TIMESTAMP), @e, @chef, @p, CAST('Pending' AS order_status))";
             cmd.Parameters.AddWithValue("e", Navigation.UserEmail);
             cmd.Parameters.AddWithValue("chef", email);
             cmd.Parameters.AddWithValue("p", price);
@@ -569,5 +575,119 @@ public class RepositoryImplementation : IRepository
         {
             return false;
         }
+    }
+
+    public static List<Ingredient> GetAllIngredients()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT name, price, calories, in_stock, allergen, country FROM ingredient";
+
+        using var reader = cmd.ExecuteReader();
+        List<Ingredient> ingredients = [];
+        while (reader.Read())
+        {
+            string name = reader.GetString(0);
+            float price = reader.GetFloat(1);
+            int calories = reader.GetInt32(2);
+            int stock = reader.GetInt32(3);
+            string allergen = reader.GetString(4);
+            string origin = reader.GetString(5);
+
+            Ingredient ingredient = new(name, price, calories, stock, allergen, origin);
+            ingredients.Add(ingredient);
+        }
+        return ingredients;
+    }
+
+    public static List<string> GetMangoChefInfo(string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT first_name, last_name, salary, working_hours FROM mango_chef WHERE email = @e";
+        cmd.Parameters.AddWithValue("e", email);
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read();
+        List<string> customer = [];
+        for (int i = 0; i < reader.FieldCount; i++)
+        {
+            string value = reader[i]?.ToString() ?? string.Empty;
+            customer.Add(value);
+        }
+        return customer;
+    }
+
+    public static List<Tool> GetAllTools()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText = "SELECT name, price, in_stock FROM tool";
+
+        using var reader = cmd.ExecuteReader();
+        List<Tool> tools = [];
+        while (reader.Read())
+        {
+            string name = reader.GetString(0);
+            float price = reader.GetFloat(1);
+            int stock = reader.GetInt32(2);
+
+            Tool tool = new(name, price, stock);
+            tools.Add(tool);
+        }
+        return tools;
+    }
+
+    public static List<List<string>> GetChefOrders(string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT time, price, status FROM \"order\" WHERE mango_chef_email = @e AND status = 'Pending' OR status = 'In Progress'";
+        cmd.Parameters.AddWithValue("e", email);
+
+        using var reader = cmd.ExecuteReader();
+        List<List<string>> orders = [];
+        while (reader.Read())
+        {
+            List<string> order = [];
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string value = reader[i]?.ToString() ?? string.Empty;
+                order.Add(value);
+            }
+            orders.Add(order);
+        }
+
+        return orders;
+    }
+
+    public static void UpdateOrderStatus(string order_time, string newStatus)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        var orderDateTime = DateTime.ParseExact(
+            order_time,
+            "M/d/yyyy h:mm:ss tt",
+            CultureInfo.InvariantCulture
+        );
+
+        var orderTimestamp = orderDateTime.ToString(
+            "yyyy-MM-dd HH:mm:ss",
+            CultureInfo.InvariantCulture
+        );
+
+        cmd.CommandText =
+            "UPDATE \"order\" SET status = CAST(@s AS \"order_status\") WHERE time = CAST(@t AS TIMESTAMP)";
+        cmd.Parameters.AddWithValue("s", newStatus);
+        cmd.Parameters.AddWithValue("t", orderTimestamp);
+        Core.WriteDebugMessage(lines: cmd.ExecuteNonQuery().ToString());
     }
 }
