@@ -373,6 +373,32 @@ public class RepositoryImplementation : IRepository
 
         try
         {
+            var outOfStockIngredients = new List<string>();
+            foreach (var (recipe, quantity) in order)
+            {
+                cmd.CommandText =
+                    $"SELECT ingredient_name, quantity FROM recipe_ingredient WHERE recipe_name = '{recipe}'";
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var ingredientName = reader.GetString(0);
+                    var ingredientQuantity = reader.GetInt32(1);
+
+                    cmd.CommandText =
+                        $"SELECT in_stock FROM ingredient WHERE name = '{ingredientName}'";
+                    var stock = (int)cmd.ExecuteScalar()!;
+
+                    if (stock < ingredientQuantity * quantity)
+                    {
+                        outOfStockIngredients.Add(ingredientName);
+                    }
+                }
+            }
+            if (outOfStockIngredients.Count > 0)
+            {
+                throw new OutOfStockException();
+            }
+
             var orderTime = DateTime.Now;
 
             cmd.CommandText =
