@@ -155,4 +155,134 @@ public class Component
             Window.Close();
         }
     }
+
+    public static List<Recipe> GetRecipes()
+    {
+        var (names, prices) = RepositoryImplementation.GetRecipesNamesAndPrices();
+        var ingredients = RepositoryImplementation.GetRecipesIngredients();
+        var tools = RepositoryImplementation.GetRecipesTools();
+        var steps = RepositoryImplementation.GetRecipesSteps();
+        var allergens = RepositoryImplementation.GetRecipesAllergens();
+        var calories = RepositoryImplementation.GetRecipesCalories();
+
+        List<Recipe> recipes = [];
+        for (int i = 0; i < names.Count; i++)
+        {
+            if (!allergens.TryGetValue(names[i], out List<string>? allergenList))
+            {
+                allergenList = ["None"];
+            }
+
+            recipes.Add(
+                new Recipe(
+                    names[i],
+                    prices[i],
+                    ingredients[names[i]],
+                    tools[names[i]],
+                    steps[names[i]],
+                    allergenList,
+                    calories[names[i]]
+                )
+            );
+        }
+
+        return recipes;
+    }
+
+    public static InteractionEventArgs<int>? SelectRecipe(List<Recipe> recipes)
+    {
+        List<string> headers = new() { "Name", "Price", "Calories", "Ingredients", "Allergens" };
+        List<List<string>> options = [];
+        for (int i = 0; i < recipes.Count; i++)
+        {
+            options.Add(
+                [
+                    recipes[i].Name,
+                    recipes[i].Price.ToString(),
+                    recipes[i].Calories.ToString(),
+                    string.Join(", ", recipes[i].Ingredients.Select(ing => ing.Ingredient)),
+                    string.Join(", ", recipes[i].Allergens)
+                ]
+            );
+        }
+
+        TableSelector recipeSelector = new("Please select a recipe:", headers, options);
+        Window.AddElement(recipeSelector);
+
+        Window.ActivateElement(recipeSelector);
+        var resp = recipeSelector.GetResponse();
+        Window.RemoveElement(recipeSelector);
+
+        return resp;
+    }
+
+    public static InteractionEventArgs<int>? SelectNumber(int recipeSelected, List<Recipe> recipes)
+    {
+        EmbedText recipeInfo =
+            new(
+                [
+                    "Recipe information:",
+                    "",
+                    $"Name: {recipes[recipeSelected].Name}",
+                    $"Price: {recipes[recipeSelected].Price}",
+                    $"Calories: {recipes[recipeSelected].Calories}"
+                ],
+                placement: Placement.TopRight
+            );
+
+        EmbedText info =
+            new(
+                [
+                    "Info note:",
+                    "",
+                    "The quantity should be between 1 and 10.",
+                    "If you want to order more, please contact the manager."
+                ],
+                placement: Placement.TopLeft
+            );
+
+        Window.AddElement(recipeInfo, info);
+        Window.Render(recipeInfo, info);
+
+        IntSelector quantitySelector =
+            new("Select the quantity of the recipe:", min: 1, max: 10, start: 1, step: 1);
+        Window.AddElement(quantitySelector);
+
+        Window.ActivateElement(quantitySelector);
+        var resp = quantitySelector.GetResponse();
+
+        Window.DeactivateElement(recipeInfo);
+        Window.DeactivateElement(info);
+        Window.RemoveElement(recipeInfo, info, quantitySelector);
+        Window.Clear();
+        Window.Render();
+
+        return resp;
+    }
+
+    public static DialogOption ConfirmCancelOrder()
+    {
+        Dialog cancelDialog = new(["Are you sure you want to cancel the order?"], "Yes", "No");
+        Window.AddElement(cancelDialog);
+        Window.ActivateElement(cancelDialog);
+        var resp = cancelDialog.GetResponse();
+        Window.RemoveElement(cancelDialog);
+
+        return resp!.Value;
+    }
+
+    public static float GetTotalPrice(Dictionary<string, int> order, List<Recipe> recipes)
+    {
+        float totalPrice = 0;
+        foreach (var (recipeName, quantity) in order)
+        {
+            var recipe = recipes.Find(r => r.Name == recipeName);
+            if (recipe != null)
+            {
+                totalPrice += recipe.Price * quantity;
+            }
+        }
+
+        return totalPrice;
+    }
 }

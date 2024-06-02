@@ -64,7 +64,7 @@ CREATE TABLE "ingredient" (
     "name" VARCHAR(255) PRIMARY KEY,
     "supplier_email" VARCHAR(255) REFERENCES "supplier_company" ("email"),
     "price" FLOAT,
-    "calories" FLOAT,
+    "calories" INT,
     "in_stock" INT,
     "allergen" VARCHAR(255),
     "country" VARCHAR(255)
@@ -560,7 +560,7 @@ VALUES (
         'Bananas',
         'alloutorder@market.com',
         1.0,
-        100.0,
+        100,
         70,
         'None',
         'Spain'
@@ -569,7 +569,7 @@ VALUES (
         'Cherries',
         'maxifood@superfood.com',
         0.3,
-        50.0,
+        50,
         50,
         'None',
         'Ireland'
@@ -578,7 +578,7 @@ VALUES (
         'Dates',
         'minifoodcmpny@food.com',
         0.5,
-        200.0,
+        200,
         30,
         'None',
         'Morocco'
@@ -587,7 +587,7 @@ VALUES (
         'Mangoes',
         'alloutorder@market.com',
         1.5,
-        150.0,
+        150,
         40,
         'None',
         'Cuba'
@@ -596,7 +596,7 @@ VALUES (
         'Sugar',
         'minifoodcmpny@food.com',
         0.2,
-        5.0,
+        5,
         250,
         'None',
         'Ireland'
@@ -605,7 +605,7 @@ VALUES (
         'Milk',
         'maxifood@superfood.com',
         0.5,
-        50.0,
+        50,
         250,
         'Lactose',
         'Ireland'
@@ -614,7 +614,7 @@ VALUES (
         'Cinnamon',
         'alloutorder@market.com',
         0.1,
-        10.0,
+        10,
         100,
         'None',
         'Sri Lanka'
@@ -623,7 +623,7 @@ VALUES (
         'Ice',
         'minifoodcmpny@food.com',
         0.1,
-        0.0,
+        0,
         200,
         'None',
         'Ireland'
@@ -632,7 +632,7 @@ VALUES (
         'Almonds',
         'maxifood@superfood.com',
         0.5,
-        100.0,
+        100,
         50,
         'None',
         'Spain'
@@ -641,7 +641,7 @@ VALUES (
         'Yogurt',
         'minifoodcmpny@food.com',
         0.3,
-        50.0,
+        50,
         100,
         'Lactose',
         'Ireland'
@@ -650,7 +650,7 @@ VALUES (
         'Watermelon',
         'maxifood@superfood.com',
         1.0,
-        100.0,
+        100,
         60,
         'None',
         'Ireland'
@@ -659,7 +659,7 @@ VALUES (
         'Honey',
         'alloutorder@market.com',
         0.2,
-        10.0,
+        10,
         100,
         'None',
         'Ireland'
@@ -668,7 +668,7 @@ VALUES (
         'Kiwi',
         'alloutorder@market.com',
         0.5,
-        50.0,
+        50,
         50,
         'None',
         'Caribbean'
@@ -677,7 +677,7 @@ VALUES (
         'Peaches',
         'maxifood@superfood.com',
         0.5,
-        50.0,
+        50,
         50,
         'None',
         'Spain'
@@ -686,7 +686,7 @@ VALUES (
         'Apples',
         'minifoodcmpny@food.com',
         0.5,
-        50.0,
+        50,
         50,
         'None',
         'Ireland'

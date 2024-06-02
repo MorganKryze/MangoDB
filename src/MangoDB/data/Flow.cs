@@ -40,7 +40,9 @@ public class Flow
         string idValue = "";
         string table = "";
         int counter = 0;
-        while (true)
+        bool loop = true;
+
+        while (loop)
         {
             Window.ActivateElement(id);
             var idResponse = id.GetResponse();
@@ -50,6 +52,7 @@ public class Flow
                 {
                     idValue = idResponse!.Value;
                     table = tables[i];
+                    loop = false;
                     break;
                 }
                 if (i == tables.Length - 1)
@@ -58,12 +61,12 @@ public class Flow
                     var wrongIdResponse = wrongId.GetResponse();
                     if (wrongIdResponse!.Value == DialogOption.Left)
                     {
+                        Window.RemoveElement(id, wrongId);
                         return false;
                     }
                     continue;
                 }
             }
-            break;
         }
 
         Prompt password =
@@ -77,7 +80,7 @@ public class Flow
         Dialog failedAuth =
             new(
                 [
-                    "Authentication failed",
+                    "Access Denied",
                     string.Empty,
                     "The authentication process failed (3 attempts).",
                     "You may try again later."
@@ -287,6 +290,124 @@ public class Flow
 
             Window.RemoveElement(errorDialog);
             return false;
+        }
+    }
+
+    public static void MakeOrder()
+    {
+        Dictionary<string, int> cart = [];
+        List<Recipe> recipes = Component.GetRecipes();
+
+        SelectRecipe:
+
+        var recipeSelected = Component.SelectRecipe(recipes);
+        if (recipeSelected!.Status is not Status.Selected)
+        {
+            return;
+        }
+
+        var quantityResp = Component.SelectNumber(recipeSelected.Value, recipes);
+        if (quantityResp!.Status is not Status.Selected)
+        {
+            goto SelectRecipe;
+        }
+
+        if (cart.ContainsKey(recipes[recipeSelected.Value].Name))
+        {
+            cart[recipes[recipeSelected.Value].Name] += quantityResp.Value;
+        }
+        else
+        {
+            cart.Add(recipes[recipeSelected.Value].Name, quantityResp.Value);
+        }
+
+        Menu:
+
+        TableView cartTable =
+            new(
+                title: "Cart",
+                headers: ["Recipe", "Quantity"],
+                lines: cart.Select(x => new List<string>() { x.Key, x.Value.ToString() }).ToList(),
+                placement: Placement.TopRight
+            );
+        Window.AddElement(cartTable);
+        Window.Render(cartTable);
+
+        string[] options = ["Add another recipe", "Clear cart", "Confirm order", "Cancel"];
+        ScrollingMenu menu = new("Please choose an option:", choices: options);
+        Window.AddElement(menu);
+        Window.ActivateElement(menu);
+
+        var menuResp = menu.GetResponse();
+
+        Window.DeactivateElement(cartTable);
+        Window.RemoveElement(menu, cartTable);
+
+        if (menuResp!.Status is not Status.Selected)
+        {
+            if (Component.ConfirmCancelOrder() is DialogOption.Right)
+            {
+                goto Menu;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        switch (menuResp.Value)
+        {
+            case 0:
+                goto SelectRecipe;
+            case 1:
+                cart.Clear();
+                goto Menu;
+
+            case 2:
+                bool validation = RepositoryImplementation.ConfirmOrder(
+                    cart,
+                    Component.GetTotalPrice(cart, recipes),
+                    RepositoryImplementation.GetRandomChefEmail()
+                );
+
+                if (validation)
+                {
+                    Dialog orderConfirmation =
+                        new(
+                            [
+                                "Order confirmation",
+                                "",
+                                "Your order has been successfully placed.",
+                                "You will receive an email with the details."
+                            ],
+                            rightOption: "OK"
+                        );
+                    Window.AddElement(orderConfirmation);
+                    Window.ActivateElement(orderConfirmation);
+
+                    Window.RemoveElement(orderConfirmation);
+                }
+                else
+                {
+                    Dialog orderFailed =
+                        new(
+                            [
+                                "Order failed",
+                                "",
+                                "An error occurred when trying to place the order.",
+                                "Please try again later."
+                            ],
+                            rightOption: "OK"
+                        );
+                    Window.AddElement(orderFailed);
+                    Window.ActivateElement(orderFailed);
+
+                    Window.RemoveElement(orderFailed);
+                }
+                break;
+
+            case 3:
+                return;
         }
     }
 

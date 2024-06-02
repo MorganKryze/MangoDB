@@ -24,7 +24,8 @@ public class Customer
             switch (homeMenuResponse!.Value)
             {
                 case 0:
-                    // Todo
+                    Flow.MakeOrder();
+                    card.UpdateLines(Component.GetCustomerCard(Navigation.UserEmail).Lines);
                     break;
 
                 case 1:

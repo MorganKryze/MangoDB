@@ -47,4 +47,44 @@ interface IRepository
     {
         throw new NotImplementedException();
     }
+
+    public static (List<string>, List<int>) GetRecipesNamesAndPrices()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static Dictionary<string, List<IngredientQuantity>> GetRecipesIngredients()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static Dictionary<string, List<string>> GetRecipesTools()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static Dictionary<string, List<string>> GetRecipesSteps()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static Dictionary<string, List<string>> GetRecipesAllergens()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static Dictionary<string, int> GetRecipesCalories()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static bool ConfirmOrder(Dictionary<string, int> order, float price, string email)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static string GetRandomChefEmail()
+    {
+        throw new NotImplementedException();
+    }
 }

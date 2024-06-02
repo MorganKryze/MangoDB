@@ -68,10 +68,10 @@ public class RepositoryImplementation : IRepository
         cmd.Parameters.AddWithValue("l", limit);
 
         using var reader = cmd.ExecuteReader();
-        List<List<string>> customers = new();
+        List<List<string>> customers = [];
         while (reader.Read())
         {
-            List<string> customer = new();
+            List<string> customer = [];
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 if (i == 3)
@@ -98,7 +98,7 @@ public class RepositoryImplementation : IRepository
 
         using var reader = cmd.ExecuteReader();
         reader.Read();
-        List<string> customer = new();
+        List<string> customer = [];
         for (int i = 0; i < reader.FieldCount; i++)
         {
             string value = reader[i]?.ToString() ?? string.Empty;
@@ -118,10 +118,10 @@ public class RepositoryImplementation : IRepository
         cmd.Parameters.AddWithValue("l", limit);
 
         using var reader = cmd.ExecuteReader();
-        List<List<string>> orders = new();
+        List<List<string>> orders = [];
         while (reader.Read())
         {
-            List<string> order = new();
+            List<string> order = [];
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 string value = reader[i]?.ToString() ?? string.Empty;
@@ -180,5 +180,241 @@ public class RepositoryImplementation : IRepository
 
         using var reader = cmd.ExecuteReader();
         return reader.Read();
+    }
+
+    public static (List<string>, List<float>) GetRecipesNamesAndPrices()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText = "SELECT name, price FROM recipe";
+
+        using var reader = cmd.ExecuteReader();
+        List<string> names = [];
+        List<float> prices = [];
+        while (reader.Read())
+        {
+            names.Add(reader.GetString(0));
+            prices.Add(reader.GetFloat(1));
+        }
+        return (names, prices);
+    }
+
+    public static Dictionary<string, List<IngredientQuantity>> GetRecipesIngredients()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT recipe.name, ingredient.name, recipe_ingredient.quantity "
+            + "FROM recipe "
+            + "JOIN recipe_ingredient ON recipe.name = recipe_ingredient.recipe_name "
+            + "JOIN ingredient ON recipe_ingredient.ingredient_name = ingredient.name";
+
+        using var reader = cmd.ExecuteReader();
+        Dictionary<string, List<IngredientQuantity>> recipeIngredients = [];
+
+        while (reader.Read())
+        {
+            string recipeName = reader.GetString(0);
+            string ingredientName = reader.GetString(1);
+            int quantity = reader.GetInt32(2);
+
+            if (!recipeIngredients.TryGetValue(recipeName, out List<IngredientQuantity>? value))
+            {
+                value = [];
+                recipeIngredients.Add(recipeName, value);
+            }
+
+            IngredientQuantity ingredientQuantity = new(ingredientName, quantity);
+            value.Add(ingredientQuantity);
+        }
+
+        return recipeIngredients;
+    }
+
+    public static Dictionary<string, List<string>> GetRecipesTools()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT recipe.name, tool.name "
+            + "FROM recipe "
+            + "JOIN recipe_tool ON recipe.name = recipe_tool.recipe_name "
+            + "JOIN tool ON recipe_tool.tool_name = tool.name";
+
+        using var reader = cmd.ExecuteReader();
+        Dictionary<string, List<string>> recipeTools = [];
+
+        while (reader.Read())
+        {
+            string recipeName = reader.GetString(0);
+            string toolName = reader.GetString(1);
+
+            if (!recipeTools.TryGetValue(recipeName, out List<string>? value))
+            {
+                value = [];
+                recipeTools.Add(recipeName, value);
+            }
+
+            value.Add(toolName);
+        }
+
+        return recipeTools;
+    }
+
+    public static Dictionary<string, List<string>> GetRecipesSteps()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT recipe.name, step.description "
+            + "FROM recipe "
+            + "JOIN step ON recipe.name = step.recipe_name";
+
+        using var reader = cmd.ExecuteReader();
+        Dictionary<string, List<string>> recipeSteps = [];
+
+        while (reader.Read())
+        {
+            string recipeName = reader.GetString(0);
+            string stepDescription = reader.GetString(1);
+
+            if (!recipeSteps.TryGetValue(recipeName, out List<string>? value))
+            {
+                value = [];
+                recipeSteps.Add(recipeName, value);
+            }
+
+            value.Add(stepDescription);
+        }
+
+        return recipeSteps;
+    }
+
+    public static Dictionary<string, List<string>> GetRecipesAllergens()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT recipe.name, ingredient.allergen "
+            + "FROM recipe "
+            + "JOIN recipe_ingredient ON recipe.name = recipe_ingredient.recipe_name "
+            + "JOIN ingredient ON recipe_ingredient.ingredient_name = ingredient.name "
+            + "WHERE ingredient.allergen IS NOT NULL AND ingredient.allergen <> 'None'";
+
+        using var reader = cmd.ExecuteReader();
+        Dictionary<string, List<string>> recipeAllergens = [];
+
+        while (reader.Read())
+        {
+            string recipeName = reader.GetString(0);
+            string allergenName = reader.GetString(1);
+
+            if (!recipeAllergens.TryGetValue(recipeName, out List<string>? value))
+            {
+                value = [];
+                recipeAllergens.Add(recipeName, value);
+            }
+
+            value.Add(allergenName);
+        }
+
+        return recipeAllergens;
+    }
+
+    public static string GetRandomChefEmail()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText = "SELECT email FROM mango_chef ORDER BY RANDOM() LIMIT 1";
+
+        using var reader = cmd.ExecuteReader();
+        reader.Read();
+        return reader.GetString(0);
+    }
+
+    public static Dictionary<string, int> GetRecipesCalories()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT recipe.name, SUM(ingredient.calories * recipe_ingredient.quantity) "
+            + "FROM recipe "
+            + "JOIN recipe_ingredient ON recipe.name = recipe_ingredient.recipe_name "
+            + "JOIN ingredient ON recipe_ingredient.ingredient_name = ingredient.name "
+            + "GROUP BY recipe.name";
+
+        using var reader = cmd.ExecuteReader();
+        Dictionary<string, int> recipeCalories = new();
+
+        while (reader.Read())
+        {
+            string recipeName = reader.GetString(0);
+            int calories = reader.GetInt32(1);
+
+            recipeCalories.Add(recipeName, calories);
+        }
+
+        return recipeCalories;
+    }
+
+    public static bool ConfirmOrder(Dictionary<string, int> order, float price, string email)
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        var transaction = cmd.Connection?.BeginTransaction();
+
+        try
+        {
+            var orderTime = DateTime.Now;
+
+            cmd.CommandText =
+                "INSERT INTO \"order\" (time, customer_email, mango_chef_email, price, status) VALUES (@t, @e, @chef, @p, CAST('Pending' AS order_status))";
+            cmd.Parameters.AddWithValue("e", Navigation.UserEmail);
+            cmd.Parameters.AddWithValue("chef", email);
+            cmd.Parameters.AddWithValue("p", Math.Round(price, 1));
+            cmd.Parameters.AddWithValue("t", orderTime);
+            cmd.ExecuteNonQuery();
+
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO order_recipe (order_time, recipe_name, quantity) VALUES ");
+
+            var i = 0;
+            foreach (var (recipe, quantity) in order)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+                sb.Append($"(@t{i}, @r{i}, @q{i})");
+
+                cmd.Parameters.AddWithValue($"t{i}", orderTime);
+                cmd.Parameters.AddWithValue($"r{i}", recipe);
+                cmd.Parameters.AddWithValue($"q{i}", quantity);
+
+                i++;
+            }
+
+            cmd.CommandText = sb.ToString();
+            cmd.ExecuteNonQuery();
+
+            transaction?.Commit();
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Core.WriteDebugMessage(lines: e.Message);
+            transaction?.Rollback();
+
+            return false;
+        }
     }
 }
