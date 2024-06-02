@@ -233,6 +233,15 @@ public class Flow
             return false;
         }
 
+        Dialog successDialog =
+            new(
+                ["Account created", "Your account has been successfully created."],
+                rightOption: "OK"
+            );
+        Window.AddElement(successDialog);
+        Window.ActivateElement(successDialog);
+
+        Window.RemoveElement(successDialog);
         return true;
     }
 
@@ -339,7 +348,7 @@ public class Flow
         Window.AddElement(cartTable);
         Window.Render(cartTable);
 
-        string[] options = ["Add another recipe", "Confirm order", "Clear cart", "Cancel"];
+        string[] options = ["Add another recipe", "Confirm order", "Clear cart", "Cancel order"];
         ScrollingMenu menu = new("Please choose an option:", choices: options);
         Window.AddElement(menu);
         Window.ActivateElement(menu);
