@@ -512,4 +512,26 @@ public class Component
 
         return resp;
     }
+
+    public static void SeeRecordsCount()
+    {
+        var (counts, total) = RepositoryImplementation.GetRecordsCount();
+        List<string> headers = ["Table", "Count"];
+        List<List<string>> options = [];
+        foreach (var (table, count) in counts)
+        {
+            options.Add([table, count.ToString()]);
+        }
+
+        TableView countsViewer = new($"Records count, total: {total}", headers, options);
+        Window.AddElement(countsViewer);
+        Window.Render(countsViewer);
+
+        Dialog exitDialog = new(["Press enter to exit"]);
+        Window.AddElement(exitDialog);
+        Window.ActivateElement(exitDialog);
+
+        Window.DeactivateElement(countsViewer);
+        Window.RemoveElement(countsViewer, exitDialog);
+    }
 }

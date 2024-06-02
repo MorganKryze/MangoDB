@@ -154,4 +154,9 @@ interface IRepository
     {
         throw new NotImplementedException();
     }
+
+    public static (Dictionary<string, int>, int) GetRecordsCount()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -785,4 +785,34 @@ public class RepositoryImplementation : IRepository
 
         cmd.ExecuteNonQuery();
     }
+
+    public static (Dictionary<string, int>, int) GetRecordsCount()
+    {
+        using var cmd = new NpgsqlCommand();
+        cmd.Connection = conn;
+
+        cmd.CommandText =
+            "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'";
+        using var reader = cmd.ExecuteReader();
+        var tables = new List<string>();
+        while (reader.Read())
+        {
+            tables.Add(reader.GetString(0));
+        }
+        reader.Close();
+
+        var records = new Dictionary<string, int>();
+
+        int totalRecords = 0;
+
+        foreach (var table in tables)
+        {
+            cmd.CommandText = $"SELECT COUNT(*) FROM \"{table}\"";
+            var count = (long)(cmd.ExecuteScalar() ?? 0);
+            records.Add(table, (int)count);
+            totalRecords += (int)count;
+        }
+
+        return (records, totalRecords);
+    }
 }

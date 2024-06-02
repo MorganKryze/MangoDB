@@ -18,6 +18,7 @@ public class MangoManager
                     "See Ingredients",
                     "See Tools",
                     "See recipes",
+                    "See records count",
                     "Hash text",
                     "Log out"
                 ]
@@ -102,6 +103,10 @@ public class MangoManager
                     break;
 
                 case 9:
+                    Component.SeeRecordsCount();
+                    break;
+
+                case 10:
                     bool hashTranslation = Flow.ShowHashed();
                     if (!hashTranslation)
                     {
@@ -122,7 +127,7 @@ public class MangoManager
                     }
                     break;
 
-                case 10:
+                case 11:
                     Navigation.LogOut();
                     return;
             }
