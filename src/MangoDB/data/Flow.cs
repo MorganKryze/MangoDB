@@ -542,17 +542,16 @@ public class Flow
             ]
         );
         Window.AddElement(info);
+        Window.Render(info);
+
         Prompt newPasswordPrompt =
             new("Type here the new password:", style: PromptInputStyle.Secret, maxInputLength: 30);
         Window.AddElement(newPasswordPrompt);
 
         while (true)
         {
-            Window.Render(info);
             Window.ActivateElement(newPasswordPrompt);
             var resp = newPasswordPrompt.GetResponse();
-            Window.DeactivateElement(info);
-            Window.RemoveElement(info, newPasswordPrompt);
 
             if (
                 resp!.Status is Status.Selected
@@ -561,10 +560,14 @@ public class Flow
             )
             {
                 RepositoryImplementation.UpdateCustomer(email, "password", Fn.Hash(resp.Value));
+                Window.DeactivateElement(info);
+                Window.RemoveElement(info, newPasswordPrompt);
                 return;
             }
             else if (resp!.Status is Status.Escaped)
             {
+                Window.DeactivateElement(info);
+                Window.RemoveElement(info, newPasswordPrompt);
                 return;
             }
         }
@@ -871,6 +874,23 @@ public class Flow
 
         List<string> headers = ["Order time", "Price", "Status"];
         List<List<string>> orders = RepositoryImplementation.GetChefOrders(email);
+        if (orders.Count == 0)
+        {
+            Dialog noOrdersDialog =
+                new(
+                    [
+                        "No orders",
+                        "There are no orders in the database.",
+                        "Please wait for an order to be placed."
+                    ],
+                    rightOption: "OK"
+                );
+            Window.AddElement(noOrdersDialog);
+            Window.ActivateElement(noOrdersDialog);
+
+            Window.RemoveElement(noOrdersDialog);
+            return;
+        }
         TableSelector orderSelector = new("Please select an order to update:", headers, orders);
         Window.AddElement(orderSelector);
         Window.ActivateElement(orderSelector);

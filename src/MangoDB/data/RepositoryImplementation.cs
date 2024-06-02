@@ -466,7 +466,7 @@ public class RepositoryImplementation : IRepository
                 "INSERT INTO \"order\" (time, customer_email, mango_chef_email, price, status) VALUES (CAST(@t AS TIMESTAMP), @e, @chef, @p, CAST('Pending' AS order_status))";
             cmd.Parameters.AddWithValue("e", Navigation.UserEmail);
             cmd.Parameters.AddWithValue("chef", email);
-            cmd.Parameters.AddWithValue("p", price);
+            cmd.Parameters.AddWithValue("p", MathF.Round(price, 1, MidpointRounding.AwayFromZero));
             cmd.Parameters.AddWithValue("t", orderTime);
             cmd.ExecuteNonQuery();
 
